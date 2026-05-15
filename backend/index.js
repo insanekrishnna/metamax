@@ -16,6 +16,7 @@ const port = Number(process.env.PORT || 3001);
 const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3000,http://127.0.0.1:3000';
 const rateLimitWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS || 3600000);
 const rateLimitMax = Number(process.env.RATE_LIMIT_MAX || 5);
+const host = process.env.HOST || '127.0.0.1';
 
 const allowedOrigins = frontendOrigin.split(',').map((origin) => origin.trim());
 
@@ -109,6 +110,18 @@ app.get('/audit/:jobId', (req, res) => {
   });
 });
 
-app.listen(port, () => {
-  console.log(`Metamax backend listening on port ${port}`);
-});
+const server = app
+  .listen(port, host, () => {
+    console.log(`Metamax backend listening on http://${host}:${port}`);
+  })
+  .on('error', (error) => {
+    if (error.code === 'EADDRINUSE') {
+      console.error(`Metamax backend could not start: ${host}:${port} is already in use.`);
+    } else {
+      console.error(`Metamax backend failed to listen on ${host}:${port}:`, error);
+    }
+
+    process.exit(1);
+  });
+
+server.ref();
