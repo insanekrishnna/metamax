@@ -55,8 +55,48 @@ async function getPageSpeedData(url) {
   return { raw: response.data, cached: false };
 }
 
+function unavailablePageSpeedResult(error) {
+  const reason = error?.message || 'PageSpeed data was unavailable.';
+  const unavailableChecks = [
+    ['lcp', 'Largest Contentful Paint', 'Aim for LCP under 2.5 seconds'],
+    ['inp', 'Interaction to Next Paint', 'Aim for INP under 200 ms'],
+    ['cls', 'Cumulative Layout Shift', 'Aim for CLS under 0.1'],
+    ['ttfb', 'Time to First Byte', 'Aim for TTFB under 0.8 seconds'],
+    ['performance_score', 'Performance Score', 'Aim for a Lighthouse performance score of 80 or higher'],
+  ];
+
+  return {
+    cached: false,
+    lighthouseScores: {
+      performance: 0,
+      accessibility: 0,
+      bestPractices: 0,
+      seo: 0,
+    },
+    checks: unavailableChecks.map(([id, label, suggestion]) =>
+      buildCheck({
+        id,
+        label,
+        status: 'warning',
+        value: 'Unavailable',
+        rating: 'Needs Improvement',
+        humanMessage: `PageSpeed data could not be loaded. ${reason}`,
+        fix: ['Retry later', 'Check PageSpeed API access', 'Review network timeout settings'],
+        suggestion,
+      })
+    ),
+  };
+}
+
 async function runPageSpeedChecks(url) {
-  const { raw, cached } = await getPageSpeedData(url);
+  let pageSpeedData;
+  try {
+    pageSpeedData = await getPageSpeedData(url);
+  } catch (error) {
+    return unavailablePageSpeedResult(error);
+  }
+
+  const { raw, cached } = pageSpeedData;
   const lighthouse = raw.lighthouseResult || {};
   const audits = lighthouse.audits || {};
   const categories = lighthouse.categories || {};

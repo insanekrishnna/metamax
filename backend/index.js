@@ -19,17 +19,16 @@ const rateLimitMax = Number(process.env.RATE_LIMIT_MAX || 5);
 
 app.use(cors({ origin: frontendOrigin === '*' ? true : frontendOrigin }));
 app.use(express.json());
-app.use(
-  rateLimit({
-    windowMs: rateLimitWindowMs,
-    max: rateLimitMax,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: 'Too many audit requests. Please try again later.' },
-  })
-);
 
-app.post('/audit', async (req, res) => {
+const auditStartLimiter = rateLimit({
+  windowMs: rateLimitWindowMs,
+  max: rateLimitMax,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many audit requests. Please try again later.' },
+});
+
+app.post('/audit', auditStartLimiter, async (req, res) => {
   try {
     const { url, force = false } = req.body || {};
     if (!url || typeof url !== 'string') {
