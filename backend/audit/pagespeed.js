@@ -1,6 +1,8 @@
 const axios = require('axios');
 const { pageSpeedCache } = require('../utils/cache');
 
+const pageSpeedTimeoutMs = Number(process.env.PAGESPEED_TIMEOUT_MS || 60000);
+
 function buildCheck({ id, label, status, value, rating, humanMessage, fix, suggestion }) {
   return {
     id,
@@ -49,7 +51,7 @@ async function getPageSpeedData(url) {
   }
 
   const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&strategy=mobile&category=performance&category=accessibility&category=best-practices&category=seo&key=${encodeURIComponent(apiKey)}`;
-  const response = await axios.get(apiUrl, { timeout: 10000 });
+  const response = await axios.get(apiUrl, { timeout: pageSpeedTimeoutMs });
 
   pageSpeedCache.set(cacheKey, response.data);
   return { raw: response.data, cached: false };
