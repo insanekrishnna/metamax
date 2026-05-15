@@ -13,11 +13,26 @@ const app = express();
 const jobs = new Map();
 
 const port = Number(process.env.PORT || 3001);
-const frontendOrigin = process.env.FRONTEND_ORIGIN || '*';
+const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3000,http://127.0.0.1:3000';
 const rateLimitWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS || 3600000);
 const rateLimitMax = Number(process.env.RATE_LIMIT_MAX || 5);
 
-app.use(cors({ origin: frontendOrigin === '*' ? true : frontendOrigin }));
+const allowedOrigins = frontendOrigin.split(',').map((origin) => origin.trim());
+
+app.use(
+  cors({
+    origin:
+      frontendOrigin === '*'
+        ? true
+        : (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+              return callback(null, true);
+            }
+
+            return callback(new Error(`CORS blocked origin: ${origin}`));
+          },
+  })
+);
 app.use(express.json());
 
 const auditStartLimiter = rateLimit({

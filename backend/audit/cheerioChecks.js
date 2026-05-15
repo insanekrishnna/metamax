@@ -35,6 +35,40 @@ function getTextWordCount($) {
   return text ? text.split(' ').length : 0;
 }
 
+function getVisibleWords($) {
+  const clone = $.root().clone();
+  clone.find('script, style, noscript').remove();
+  return clone
+    .text()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .split(/\s+/)
+    .filter((word) => word.length > 2);
+}
+
+function pickTargetKeyword(title, h1, words) {
+  const stopWords = new Set([
+    'and',
+    'are',
+    'for',
+    'from',
+    'has',
+    'have',
+    'the',
+    'this',
+    'that',
+    'with',
+    'your',
+  ]);
+  const candidates = `${title} ${h1}`
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .split(/\s+/)
+    .filter((word) => word.length > 3 && !stopWords.has(word));
+
+  return candidates.find((word) => words.includes(word)) || candidates[0] || '';
+}
+
 function isLogicalHeadingOrder(levels) {
   for (let i = 1; i < levels.length; i += 1) {
     if (levels[i] - levels[i - 1] > 1) {
@@ -72,6 +106,7 @@ async function runCheerioChecks({ url, html, finalUrl, headers, loadTimeMs, robo
   const pageOrigin = pageUrl.origin;
   const title = $('title').first().text().trim();
   const metaDescription = $('meta[name="description"]').attr('content')?.trim() || '';
+  const firstH1 = $('h1').first().text().replace(/\s+/g, ' ').trim();
   const h1Count = $('h1').length;
   const headingLevels = $('h1, h2, h3, h4, h5, h6')
     .map((_, el) => Number(el.tagName.slice(1)))
@@ -105,6 +140,10 @@ async function runCheerioChecks({ url, html, finalUrl, headers, loadTimeMs, robo
   const inlineStyledNodes = $('[style]').length;
   const totalNodes = $('*').length || 1;
   const inlineStyleRatio = Math.round((inlineStyledNodes / totalNodes) * 100);
+  const visibleWords = getVisibleWords($);
+  const targetKeyword = pickTargetKeyword(title, firstH1, visibleWords);
+  const keywordHits = targetKeyword ? visibleWords.filter((word) => word === targetKeyword).length : 0;
+  const keywordDensity = visibleWords.length ? (keywordHits / visibleWords.length) * 100 : 0;
   const brokenLinks = await checkBrokenLinks(links);
   const faviconExists = await doesFaviconExist(faviconUrl);
 
@@ -116,7 +155,7 @@ async function runCheerioChecks({ url, html, finalUrl, headers, loadTimeMs, robo
           id: 'title_length',
           label: 'Title Tag Length',
           status,
-          value: title ? `${title.length} characters` : 'Missing',
+          value: title ? `"${title}" - ${title.length} chars` : 'Missing',
           rating: toRating(status),
           humanMessage: title
             ? status === 'pass'
@@ -135,7 +174,7 @@ async function runCheerioChecks({ url, html, finalUrl, headers, loadTimeMs, robo
           id: 'meta_description',
           label: 'Meta Description',
           status,
-          value: metaDescription ? `${metaDescription.length} characters` : 'Missing',
+          value: metaDescription ? `"${metaDescription}" - ${metaDescription.length} chars` : 'Missing',
           rating: toRating(status),
           humanMessage: metaDescription
             ? 'Your meta description length affects search snippet quality.'
@@ -150,7 +189,7 @@ async function runCheerioChecks({ url, html, finalUrl, headers, loadTimeMs, robo
           id: 'h1_presence',
           label: 'H1 Structure',
           status: h1Count === 1 ? 'pass' : h1Count > 1 ? 'warning' : 'fail',
-          value: `${h1Count} H1 tag${h1Count === 1 ? '' : 's'}`,
+          value: h1Count === 1 ? `"${firstH1}" - single H1 present` : `${h1Count} H1 tag${h1Count === 1 ? '' : 's'}`,
           rating: toRating(h1Count === 1 ? 'pass' : h1Count > 1 ? 'warning' : 'fail'),
           humanMessage: h1Count === 1 ? 'Your page has a single primary heading.' : 'Your page should have exactly one clear H1 heading.',
           fix: ['Keep one H1', 'Reflect page topic', 'Avoid duplicate H1s'],
@@ -239,6 +278,24 @@ async function runCheerioChecks({ url, html, finalUrl, headers, loadTimeMs, robo
           humanMessage: wordCount >= 300 ? 'Your page has enough text for context.' : 'Thin content may limit ranking opportunities.',
           fix: ['Add more detail', 'Answer user intent', 'Expand key sections'],
           suggestion: 'Aim for at least 300 useful words',
+        });
+      })(),
+      (() => {
+        const hasKeyword = Boolean(targetKeyword);
+        const status = hasKeyword && keywordDensity >= 0.5 ? 'pass' : hasKeyword ? 'warning' : 'warning';
+        return buildCheck({
+          id: 'keyword_density',
+          label: 'Keyword Density',
+          status,
+          value: hasKeyword ? `"${targetKeyword}" appears ${keywordHits}x (${keywordDensity.toFixed(2)}%)` : 'No clear keyword detected',
+          rating: toRating(status),
+          jsDependent: true,
+          humanMessage:
+            hasKeyword && keywordDensity >= 0.5
+              ? 'The target keyword appears in the body content.'
+              : 'The likely target keyword appears very little in body content.',
+          fix: ['Use target keyword naturally', 'Add supporting copy', 'Avoid keyword stuffing'],
+          suggestion: 'Mention the target keyword where it helps explain the page.',
         });
       })(),
       (() => {
