@@ -78,7 +78,7 @@ export default function UrlScanForm({
         aria-label="Website domain"
         className={
           isHero
-            ? "min-w-0 flex-1 rounded-md bg-white/42 px-4 py-3 text-[13px] font-light text-[#0A0A0F] outline-none placeholder:text-[#9CA3AF] sm:bg-transparent"
+            ? "min-w-0 flex-1 rounded-md bg-white/42 px-4 py-3 text-sm font-light text-[#0A0A0F] outline-none placeholder:text-[#9CA3AF] sm:bg-transparent sm:text-[13px]"
             : `min-w-0 flex-1 bg-transparent text-[#0A0A0F] outline-none placeholder:text-[#9CA3AF] ${
                 compact ? "px-4 py-2.5 text-[13px]" : "px-5 py-4 text-[13px]"
               }`
@@ -88,7 +88,7 @@ export default function UrlScanForm({
         type="submit"
         className={
           isHero
-            ? "inline-flex h-9 w-full shrink-0 items-center justify-center gap-2 rounded-md bg-[#090A12] px-5 text-[13px] font-normal text-white transition hover:bg-[#1A1B24] sm:w-auto"
+            ? "inline-flex h-10 w-full shrink-0 items-center justify-center gap-2 rounded-md bg-[#090A12] px-5 text-sm font-normal text-white transition hover:bg-[#1A1B24] sm:h-9 sm:w-auto sm:text-[13px]"
             : `inline-flex shrink-0 items-center justify-center gap-2 rounded-md bg-[#090A12] font-normal text-white transition hover:bg-[#1A1B24] ${
                 compact ? "px-4 py-2.5 text-[13px]" : "px-5 py-3 text-[13px] sm:px-6"
               }`

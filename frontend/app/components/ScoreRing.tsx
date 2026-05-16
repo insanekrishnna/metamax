@@ -35,7 +35,12 @@ export default function ScoreRing({ score, size, strokeWidth, label }: ScoreRing
   const circumference = 2 * Math.PI * radius;
   const dashOffset = circumference - (mounted ? normalizedScore / 100 : 0) * circumference;
   const color = scoreColor(normalizedScore);
-  const sizeClass = size >= 120 ? "h-[120px] w-[120px]" : size >= 80 ? "h-20 w-20" : "h-16 w-16";
+  const sizeClass =
+    size >= 120
+      ? "h-[104px] w-[104px] sm:h-[120px] sm:w-[120px]"
+      : size >= 80
+        ? "h-16 w-16 sm:h-20 sm:w-20"
+        : "h-14 w-14 sm:h-16 sm:w-16";
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => setMounted(true));
@@ -45,7 +50,7 @@ export default function ScoreRing({ score, size, strokeWidth, label }: ScoreRing
   return (
     <div className="flex flex-col items-center text-center">
       <div className={`relative ${sizeClass}`}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90">
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="h-full w-full -rotate-90">
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -69,13 +74,13 @@ export default function ScoreRing({ score, size, strokeWidth, label }: ScoreRing
         </svg>
         <span
           className={`absolute inset-0 flex items-center justify-center font-light text-[#0A0A0F] ${
-            size >= 100 ? "text-5xl" : size >= 80 ? "text-2xl" : "text-base"
+            size >= 100 ? "text-4xl sm:text-5xl" : size >= 80 ? "text-xl sm:text-2xl" : "text-sm sm:text-base"
           }`}
         >
           {normalizedScore}
         </span>
       </div>
-      <p className="mt-3 text-sm font-light text-[#4B5563]">{label}</p>
+      <p className="mt-2 text-xs font-light text-[#4B5563] sm:mt-3 sm:text-sm">{label}</p>
     </div>
   );
 }

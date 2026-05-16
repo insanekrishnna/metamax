@@ -61,25 +61,25 @@ function SiteBackdrop() {
 
 function HeroSection() {
   return (
-    <section className="relative isolate overflow-hidden px-4 pb-24 pt-28 sm:px-6 sm:pt-32 lg:px-8">
-      <div className="relative z-10 mx-auto grid w-full max-w-[1200px] items-start gap-12 lg:grid-cols-12 lg:gap-15">
+    <section className="relative isolate overflow-hidden px-4 pb-18 pt-24 sm:px-6 sm:pb-24 sm:pt-32 lg:px-8">
+      <div className="relative z-10 mx-auto grid w-full max-w-[1200px] items-start gap-10 sm:gap-12 lg:grid-cols-12 lg:gap-15">
         <div className="flex flex-col items-start text-left lg:col-span-5">
           <p className="inline-flex items-center gap-1 rounded-full border border-[#4F46E5]/45 bg-[linear-gradient(135deg,rgba(255,255,255,0.84),rgba(238,242,255,0.52))] px-3 py-1.5 text-xs font-light text-[#32364C] shadow-[inset_0_1px_0_rgba(255,255,255,0.86),0_14px_44px_rgba(79,70,229,0.16)] ring-1 ring-white/75 backdrop-blur-2xl">
             <Image src="/metamaxx.png" alt="" width={16} height={16} className="h-3.5 w-auto drop-shadow-[0_0_8px_rgba(79,70,229,0.38)]" />
             <span>30+ performance audits</span>
           </p>
 
-          <h1 className="mt-10 max-w-[600px] text-[44px] font-light leading-[1.05] text-[#080A16] sm:text-[56px]">
+          <h1 className="mt-9 max-w-[600px] text-[38px] font-light leading-[1.05] text-[#080A16] min-[380px]:text-[42px] sm:mt-10 sm:text-[56px]">
             Websites have hidden bottlenecks
           </h1>
-          <h3 className="mt-8 max-w-[560px] text-[28px] font-light leading-tight text-[#4F46E5]">
+          <h3 className="mt-7 max-w-[560px] text-[24px] font-light leading-tight text-[#4F46E5] sm:mt-8 sm:text-[28px]">
             Know exactly what to fix
           </h3>
-          <p className="mt-6 max-w-[520px] text-[15px] font-light leading-[1.7] text-[#4B5563]">
+          <p className="mt-5 max-w-[520px] text-sm font-light leading-[1.7] text-[#4B5563] sm:mt-6 sm:text-[15px]">
             Paste URL and get a focused audit for search, performance, web vitals in one clean view.
           </p>
 
-          <div className="mt-10 w-full max-w-[560px]">
+          <div className="mt-8 w-full max-w-[560px] sm:mt-10">
             <UrlScanForm variant="hero" buttonLabel="Scan site" />
           </div>
         </div>
@@ -94,7 +94,7 @@ function HeroSection() {
 
 function ProofBand() {
   return (
-    <section id="proof" className="relative z-10 px-4 py-24 sm:px-6 lg:px-8">
+    <section id="proof" className="relative z-10 px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="mx-auto grid w-full max-w-[1200px] gap-6 sm:grid-cols-2">
         {proofItems.map((item) => {
           const Icon = item.icon;

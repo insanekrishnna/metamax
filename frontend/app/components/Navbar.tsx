@@ -34,19 +34,19 @@ export default function Navbar({ children, variant = "default" }: NavbarProps) {
           : "sticky top-0 z-50 border-b border-white/55 bg-white/34 shadow-[0_1px_0_rgba(255,255,255,0.38),0_18px_60px_rgba(15,23,42,0.05)] backdrop-blur-[30px]"
       }
     >
-      <div className={`mx-auto flex h-14 w-full max-w-[1200px] items-center justify-between gap-4 ${isHome ? "" : "px-5 sm:px-8"}`}>
+      <div className={`mx-auto flex h-14 w-full max-w-[1200px] items-center justify-between gap-2.5 max-[360px]:h-12 sm:gap-4 ${isHome ? "" : "px-3 sm:px-8"}`}>
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <Image src="/metamaxx.png" alt="Metamax logo" width={28} height={28} className="h-6 w-auto" priority />
+          <Image src="/metamaxx.png" alt="Metamax logo" width={28} height={28} className="h-5 w-auto sm:h-6" priority />
           <span className="text-[15px] font-medium text-[#0A0A0F] max-[360px]:hidden">Metamax</span>
         </Link>
 
         {children ? (
-          <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-3">
             <div className="hidden min-w-0 flex-1 justify-end md:flex">{children}</div>
             <ToolsDropdown />
             <Link
               href="/scan"
-              className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-md bg-[#090A12] px-4 text-[13px] font-normal text-white transition hover:bg-[#1A1B24] md:hidden"
+              className="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-md bg-[#090A12] px-3 text-[12px] font-normal text-white transition hover:bg-[#1A1B24] sm:h-9 sm:gap-2 sm:px-4 sm:text-[13px] md:hidden"
             >
               Scan
               <ArrowRight size={14} strokeWidth={1.8} />
@@ -57,7 +57,7 @@ export default function Navbar({ children, variant = "default" }: NavbarProps) {
             <ToolsDropdown />
             <Link
               href="/scan"
-              className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-md bg-[#090A12] px-4 text-[13px] font-normal text-white transition hover:bg-[#1A1B24]"
+              className="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-md bg-[#090A12] px-3 text-[12px] font-normal text-white transition hover:bg-[#1A1B24] sm:h-9 sm:gap-2 sm:px-4 sm:text-[13px]"
             >
               Scan
               <ArrowRight size={14} strokeWidth={1.8} />
@@ -90,7 +90,7 @@ function ToolsDropdown() {
         type="button"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex h-9 items-center gap-1.5 rounded-md border border-white/55 bg-white/26 px-3 text-[13px] font-light text-[#0A0A0F] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-[28px] transition hover:bg-white/44"
+        className="inline-flex h-8 items-center gap-1.5 rounded-md border border-white/55 bg-white/26 px-2.5 text-[12px] font-light text-[#0A0A0F] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-[28px] transition hover:bg-white/44 sm:h-9 sm:px-3 sm:text-[13px]"
       >
         Tools
         <ChevronDown size={14} strokeWidth={1.8} className={`transition ${isOpen ? "rotate-180" : ""}`} />

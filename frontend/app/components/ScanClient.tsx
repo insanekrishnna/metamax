@@ -420,7 +420,7 @@ export default function ScanClient() {
         </Navbar>
       </div>
 
-      <div className="mx-auto w-full max-w-7xl px-4 pb-12 pt-6 sm:px-8 sm:pt-10">
+      <div className="mx-auto w-full max-w-7xl px-3 pb-10 pt-5 min-[380px]:px-4 sm:px-8 sm:pb-12 sm:pt-10">
         {status === "loading" && (
           <div className="no-print">
             <LoadingState steps={steps} />
@@ -545,7 +545,7 @@ function ExportDropdown({ data }: { data: AuditData }) {
     <div ref={dropdownRef} className="relative">
       <button
         onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex items-center gap-2 rounded-md border border-white/60 bg-white/28 px-4 py-2 text-[13px] font-light text-[#0A0A0F] backdrop-blur-2xl transition hover:bg-white/48"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-white/60 bg-white/28 px-3 py-2 text-[13px] font-light text-[#0A0A0F] backdrop-blur-2xl transition hover:bg-white/48 sm:w-auto sm:px-4"
       >
         Export
         <ChevronDown size={16} strokeWidth={1.8} />
@@ -686,11 +686,11 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
           {finalUrl !== data.url && <p className="mt-1 text-sm font-light text-[#616674]">Redirected from {originalUrlLabel}</p>}
           <p className="mt-2 text-sm font-light text-[#616674]">{timestamp(data.scannedAt)}</p>
         </div>
-        <div className="no-print flex w-full flex-wrap gap-3 sm:w-auto">
+        <div className="no-print grid w-full grid-cols-2 gap-2.5 sm:flex sm:w-auto sm:flex-wrap sm:gap-3">
           <ExportDropdown data={data} />
           <button
             onClick={onRescan}
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-white/60 bg-white/28 px-4 py-2 text-sm font-light text-[#0A0A0F] backdrop-blur-2xl transition hover:bg-white/48 sm:flex-none"
+            className="inline-flex items-center justify-center gap-2 rounded-md border border-white/60 bg-white/28 px-3 py-2 text-sm font-light text-[#0A0A0F] backdrop-blur-2xl transition hover:bg-white/48 sm:px-4"
           >
             <RotateCw size={16} strokeWidth={1.8} />
             Re-scan
@@ -698,7 +698,7 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
         </div>
       </section>
 
-      <section className="grid gap-6 rounded-lg border border-white/60 bg-white/38 p-5 shadow-[0_28px_90px_rgba(15,23,42,0.10)] backdrop-blur-2xl sm:p-8 lg:grid-cols-[180px_1fr_360px] lg:items-center">
+      <section className="grid gap-5 rounded-lg border border-white/60 bg-white/38 p-4 shadow-[0_28px_90px_rgba(15,23,42,0.10)] backdrop-blur-2xl min-[380px]:p-5 sm:gap-6 sm:p-8 lg:grid-cols-[180px_1fr_360px] lg:items-center">
         <div className="flex flex-col items-center">
           <ScoreRing score={overall} size={120} strokeWidth={9} label="Total Evaluation" />
         </div>
@@ -706,11 +706,11 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
           <h1 className={`text-3xl font-light sm:text-[32px] ${scoreTextColor(overall)}`}>
             {rating}
           </h1>
-          <p className="mt-3 font-light text-[#616674]">
+          <p className="mt-3 text-sm font-light leading-6 text-[#616674] sm:text-base">
             {summary.critical} critical · {summary.warnings} warnings · {summary.passing} passing
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 min-[380px]:gap-4 sm:grid-cols-4 lg:grid-cols-4">
           {lighthouseScores.map((score) => (
             <ScoreRing key={score.label} score={score.value} size={64} strokeWidth={6} label={score.label} />
           ))}
@@ -727,7 +727,7 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
 
 function SeoAuditPanel({ grouped, summary }: { grouped: ReturnType<typeof groupChecks>; summary: ReturnType<typeof scoreSummary> }) {
   return (
-    <section className="rounded-lg border border-white/60 bg-white/38 p-4 backdrop-blur-2xl sm:p-6">
+    <section className="rounded-lg border border-white/60 bg-white/38 p-3.5 backdrop-blur-2xl min-[380px]:p-4 sm:p-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <h2 className="text-xl font-light text-[#0A0A0F]">SEO Audit</h2>
         <div className="flex flex-wrap gap-3 text-xs font-light text-[#616674]">
@@ -789,16 +789,16 @@ function AuditCheckRow({ check }: { check: AuditCheck }) {
           type="button"
           onClick={() => setIsExpanded((current) => !current)}
           aria-label={isExpanded ? "Collapse description" : "Show full description"}
-          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/60 bg-white/36 text-[#616674] backdrop-blur-xl transition hover:bg-white/58"
+          className="absolute right-2.5 top-2.5 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/60 bg-white/36 text-[#616674] backdrop-blur-xl transition hover:bg-white/58 sm:right-3 sm:top-3"
         >
           <ChevronDown size={16} strokeWidth={1.8} className={`transition ${isExpanded ? "rotate-180" : ""}`} />
         </button>
       )}
-      <div className="flex gap-3 pr-8 sm:pr-9">
+      <div className="flex gap-2.5 pr-8 sm:gap-3 sm:pr-9">
         <Icon size={18} strokeWidth={1.8} className="mt-0.5 shrink-0" />
         <div>
-          <h3 className="font-normal text-[#0A0A0F]">{check.label}</h3>
-          <p className={`mt-1 min-h-12 text-sm font-light leading-6 text-[#616674] ${canExpand && !isExpanded ? "line-clamp-2" : ""}`}>
+          <h3 className="text-[15px] font-normal text-[#0A0A0F] sm:text-base">{check.label}</h3>
+          <p className={`mt-1 min-h-11 text-[13px] font-light leading-5 text-[#616674] sm:min-h-12 sm:text-sm sm:leading-6 ${canExpand && !isExpanded ? "line-clamp-2" : ""}`}>
             {details}
           </p>
         </div>
@@ -816,10 +816,10 @@ function LighthousePanel({ data }: { data: AuditData }) {
   ];
 
   return (
-    <aside className="rounded-lg border border-white/60 bg-white/38 p-4 backdrop-blur-2xl sm:p-6 lg:sticky lg:bottom-8">
+    <aside className="rounded-lg border border-white/60 bg-white/38 p-3.5 backdrop-blur-2xl min-[380px]:p-4 sm:p-6 lg:sticky lg:bottom-8">
       <h2 className="text-xl font-light text-[#0A0A0F]">Lighthouse</h2>
       <p className="mt-6 text-xs font-light uppercase tracking-[0.2em] text-[#616674]">Lighthouse Scores</p>
-      <div className="mt-5 grid grid-cols-2 gap-4 sm:gap-6">
+      <div className="mt-5 grid grid-cols-2 gap-3 min-[380px]:gap-4 sm:gap-6">
         {scores.map((score) => (
           <ScoreRing key={score.label} score={score.value} size={80} strokeWidth={7} label={score.label} />
         ))}
@@ -845,13 +845,13 @@ function VitalRow({ vital }: { vital: ReturnType<typeof webVitalChecks>[number] 
   const label = vital.status === "pass" ? "Good" : vital.status === "warning" ? "Needs work" : "Poor";
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg border border-white/55 border-l-[3px] border-l-[#4F46E5] bg-white/34 px-3 py-3 backdrop-blur-xl sm:px-4">
+    <div className="flex items-center justify-between gap-2.5 rounded-lg border border-white/55 border-l-[3px] border-l-[#4F46E5] bg-white/34 px-3 py-3 backdrop-blur-xl sm:gap-3 sm:px-4">
       <div>
         <p className="font-normal text-[#0A0A0F]">{vital.id}</p>
-        <p className="text-xs font-light text-[#616674]">{vital.fullName}</p>
+        <p className="text-[11px] font-light text-[#616674] sm:text-xs">{vital.fullName}</p>
       </div>
       <div className="text-right">
-        <p className="font-normal text-[#0A0A0F]">{vital.value}</p>
+        <p className="text-sm font-normal text-[#0A0A0F] sm:text-base">{vital.value}</p>
         <span className={`mt-1 inline-flex rounded-md px-2 py-0.5 text-xs font-light ${badge}`}>{label}</span>
       </div>
     </div>
