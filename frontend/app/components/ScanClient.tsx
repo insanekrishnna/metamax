@@ -420,7 +420,7 @@ export default function ScanClient() {
         </Navbar>
       </div>
 
-      <div className="mx-auto w-full max-w-7xl px-5 pb-12 pt-8 sm:px-8 sm:pt-10">
+      <div className="mx-auto w-full max-w-7xl px-4 pb-12 pt-6 sm:px-8 sm:pt-10">
         {status === "loading" && (
           <div className="no-print">
             <LoadingState steps={steps} />
@@ -686,11 +686,11 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
           {finalUrl !== data.url && <p className="mt-1 text-sm font-light text-[#616674]">Redirected from {originalUrlLabel}</p>}
           <p className="mt-2 text-sm font-light text-[#616674]">{timestamp(data.scannedAt)}</p>
         </div>
-        <div className="no-print flex flex-wrap gap-3">
+        <div className="no-print flex w-full flex-wrap gap-3 sm:w-auto">
           <ExportDropdown data={data} />
           <button
             onClick={onRescan}
-            className="inline-flex items-center gap-2 rounded-md border border-white/60 bg-white/28 px-4 py-2 text-sm font-light text-[#0A0A0F] backdrop-blur-2xl transition hover:bg-white/48"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-white/60 bg-white/28 px-4 py-2 text-sm font-light text-[#0A0A0F] backdrop-blur-2xl transition hover:bg-white/48 sm:flex-none"
           >
             <RotateCw size={16} strokeWidth={1.8} />
             Re-scan
@@ -698,7 +698,7 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
         </div>
       </section>
 
-      <section className="grid gap-8 rounded-lg border border-white/60 bg-white/38 p-8 shadow-[0_28px_90px_rgba(15,23,42,0.10)] backdrop-blur-2xl lg:grid-cols-[180px_1fr_360px] lg:items-center">
+      <section className="grid gap-6 rounded-lg border border-white/60 bg-white/38 p-5 shadow-[0_28px_90px_rgba(15,23,42,0.10)] backdrop-blur-2xl sm:p-8 lg:grid-cols-[180px_1fr_360px] lg:items-center">
         <div className="flex flex-col items-center">
           <ScoreRing score={overall} size={120} strokeWidth={9} label="Total Evaluation" />
         </div>
@@ -727,7 +727,7 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
 
 function SeoAuditPanel({ grouped, summary }: { grouped: ReturnType<typeof groupChecks>; summary: ReturnType<typeof scoreSummary> }) {
   return (
-    <section className="rounded-lg border border-white/60 bg-white/38 p-6 backdrop-blur-2xl">
+    <section className="rounded-lg border border-white/60 bg-white/38 p-4 backdrop-blur-2xl sm:p-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <h2 className="text-xl font-light text-[#0A0A0F]">SEO Audit</h2>
         <div className="flex flex-wrap gap-3 text-xs font-light text-[#616674]">
@@ -758,7 +758,7 @@ function CheckGroup({ title, checks }: { title: string; checks: AuditCheck[] }) 
 
   return (
     <div className="mt-8">
-      <p className="mb-4 text-xs font-light uppercase tracking-[0.2em] text-[#4F46E5]">{title}</p>
+      <p className="mb-4 text-xs font-light uppercase tracking-[0.16em] text-[#4F46E5] sm:tracking-[0.2em]">{title}</p>
       <div className="space-y-3">
         {checks.map((check) => (
           <AuditCheckRow key={check.id || check.label} check={check} />
@@ -782,7 +782,7 @@ function AuditCheckRow({ check }: { check: AuditCheck }) {
 
   return (
     <article
-      className={`relative rounded-lg border border-white/55 border-l-[3px] bg-white/36 px-4 py-4 backdrop-blur-xl transition hover:bg-white/48 ${statusClasses[status]}`}
+      className={`relative rounded-lg border border-white/55 border-l-[3px] bg-white/36 px-3 py-4 backdrop-blur-xl transition hover:bg-white/48 sm:px-4 ${statusClasses[status]}`}
     >
       {canExpand && (
         <button
@@ -794,7 +794,7 @@ function AuditCheckRow({ check }: { check: AuditCheck }) {
           <ChevronDown size={16} strokeWidth={1.8} className={`transition ${isExpanded ? "rotate-180" : ""}`} />
         </button>
       )}
-      <div className="flex gap-3 pr-9">
+      <div className="flex gap-3 pr-8 sm:pr-9">
         <Icon size={18} strokeWidth={1.8} className="mt-0.5 shrink-0" />
         <div>
           <h3 className="font-normal text-[#0A0A0F]">{check.label}</h3>
@@ -816,10 +816,10 @@ function LighthousePanel({ data }: { data: AuditData }) {
   ];
 
   return (
-    <aside className="rounded-lg border border-white/60 bg-white/38 p-6 backdrop-blur-2xl lg:sticky lg:bottom-8">
+    <aside className="rounded-lg border border-white/60 bg-white/38 p-4 backdrop-blur-2xl sm:p-6 lg:sticky lg:bottom-8">
       <h2 className="text-xl font-light text-[#0A0A0F]">Lighthouse</h2>
       <p className="mt-6 text-xs font-light uppercase tracking-[0.2em] text-[#616674]">Lighthouse Scores</p>
-      <div className="mt-5 grid grid-cols-2 gap-6">
+      <div className="mt-5 grid grid-cols-2 gap-4 sm:gap-6">
         {scores.map((score) => (
           <ScoreRing key={score.label} score={score.value} size={80} strokeWidth={7} label={score.label} />
         ))}
@@ -845,7 +845,7 @@ function VitalRow({ vital }: { vital: ReturnType<typeof webVitalChecks>[number] 
   const label = vital.status === "pass" ? "Good" : vital.status === "warning" ? "Needs work" : "Poor";
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg border border-white/55 border-l-[3px] border-l-[#4F46E5] bg-white/34 px-4 py-3 backdrop-blur-xl">
+    <div className="flex items-center justify-between gap-3 rounded-lg border border-white/55 border-l-[3px] border-l-[#4F46E5] bg-white/34 px-3 py-3 backdrop-blur-xl sm:px-4">
       <div>
         <p className="font-normal text-[#0A0A0F]">{vital.id}</p>
         <p className="text-xs font-light text-[#616674]">{vital.fullName}</p>

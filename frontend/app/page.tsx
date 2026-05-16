@@ -62,14 +62,14 @@ function SiteBackdrop() {
 function HeroSection() {
   return (
     <section className="relative isolate overflow-hidden px-4 pb-24 pt-28 sm:px-6 sm:pt-32 lg:px-8">
-      <div className="relative z-10 mx-auto grid w-full max-w-[1200px] items-start gap-15 lg:grid-cols-12">
+      <div className="relative z-10 mx-auto grid w-full max-w-[1200px] items-start gap-12 lg:grid-cols-12 lg:gap-15">
         <div className="flex flex-col items-start text-left lg:col-span-5">
           <p className="inline-flex items-center gap-1 rounded-full border border-[#4F46E5]/45 bg-[linear-gradient(135deg,rgba(255,255,255,0.84),rgba(238,242,255,0.52))] px-3 py-1.5 text-xs font-light text-[#32364C] shadow-[inset_0_1px_0_rgba(255,255,255,0.86),0_14px_44px_rgba(79,70,229,0.16)] ring-1 ring-white/75 backdrop-blur-2xl">
             <Image src="/metamaxx.png" alt="" width={16} height={16} className="h-3.5 w-auto drop-shadow-[0_0_8px_rgba(79,70,229,0.38)]" />
             <span>30+ performance audits</span>
           </p>
 
-          <h1 className="mt-10 max-w-[600px] text-5xl font-light leading-[1.05] text-[#080A16] sm:text-[56px]">
+          <h1 className="mt-10 max-w-[600px] text-[44px] font-light leading-[1.05] text-[#080A16] sm:text-[56px]">
             Websites have hidden bottlenecks
           </h1>
           <h3 className="mt-8 max-w-[560px] text-[28px] font-light leading-tight text-[#4F46E5]">

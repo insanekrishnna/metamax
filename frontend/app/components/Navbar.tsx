@@ -37,13 +37,20 @@ export default function Navbar({ children, variant = "default" }: NavbarProps) {
       <div className={`mx-auto flex h-14 w-full max-w-[1200px] items-center justify-between gap-4 ${isHome ? "" : "px-5 sm:px-8"}`}>
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <Image src="/metamaxx.png" alt="Metamax logo" width={28} height={28} className="h-6 w-auto" priority />
-          <span className="text-[15px] font-medium text-[#0A0A0F]">Metamax</span>
+          <span className="text-[15px] font-medium text-[#0A0A0F] max-[360px]:hidden">Metamax</span>
         </Link>
 
         {children ? (
           <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
             <div className="hidden min-w-0 flex-1 justify-end md:flex">{children}</div>
             <ToolsDropdown />
+            <Link
+              href="/scan"
+              className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-md bg-[#090A12] px-4 text-[13px] font-normal text-white transition hover:bg-[#1A1B24] md:hidden"
+            >
+              Scan
+              <ArrowRight size={14} strokeWidth={1.8} />
+            </Link>
           </div>
         ) : (
           <nav className="flex items-center gap-2 sm:gap-3" aria-label={isHome ? "Homepage navigation" : "Main navigation"}>
