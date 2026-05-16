@@ -9,6 +9,7 @@ type UrlScanFormProps = {
   className?: string;
   buttonLabel?: string;
   compact?: boolean;
+  showProtocolPrefix?: boolean;
   variant?: "default" | "hero";
   onSubmitUrl?: (url: string) => void;
 };
@@ -26,6 +27,7 @@ export default function UrlScanForm({
   className = "",
   buttonLabel = "SCAN",
   compact = false,
+  showProtocolPrefix = true,
   variant = "default",
   onSubmitUrl,
 }: UrlScanFormProps) {
@@ -56,17 +58,19 @@ export default function UrlScanForm({
           : `flex w-full items-center rounded-lg border border-white/60 bg-white/58 p-1 backdrop-blur-2xl ${className}`
       }
     >
-      <span
-        className={
-          isHero
-            ? "hidden shrink-0 border-r border-[rgba(10,10,15,0.08)] px-4 py-3 text-[13px] font-light text-[#4F46E5] sm:inline-flex"
-            : `shrink-0 border-r border-[rgba(10,10,15,0.08)] font-light text-[#4F46E5] ${
-                compact ? "px-4 py-2.5 text-[13px]" : "px-5 py-4 text-[13px]"
-              }`
-        }
-      >
-        https://
-      </span>
+      {showProtocolPrefix && (
+        <span
+          className={
+            isHero
+              ? "hidden shrink-0 border-r border-[rgba(10,10,15,0.08)] px-4 py-3 text-[13px] font-light text-[#4F46E5] sm:inline-flex"
+              : `shrink-0 border-r border-[rgba(10,10,15,0.08)] font-light text-[#4F46E5] ${
+                  compact ? "px-4 py-2.5 text-[13px]" : "px-5 py-4 text-[13px]"
+                }`
+          }
+        >
+          https://
+        </span>
+      )}
       <input
         value={value}
         onChange={(event) => setValue(event.target.value)}

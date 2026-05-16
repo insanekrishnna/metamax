@@ -147,6 +147,16 @@ function safeDomain(url: string) {
   }
 }
 
+function displayUrl(url: string) {
+  try {
+    const parsed = new URL(url);
+    const path = `${parsed.pathname}${parsed.search}${parsed.hash}`.replace(/\/$/g, "");
+    return `${parsed.hostname.replace(/^www\./, "")}${path === "/" ? "" : path}`;
+  } catch {
+    return url.replace(/^https?:\/\//i, "").replace(/\/$/g, "");
+  }
+}
+
 function downloadFile(content: string, filename: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
@@ -402,6 +412,7 @@ export default function ScanClient() {
             key={`desktop-${url}`}
             initialValue={url}
             compact
+            showProtocolPrefix={false}
             buttonLabel="SCAN"
             onSubmitUrl={(targetUrl) => startAudit(targetUrl, true)}
           />
@@ -415,6 +426,7 @@ export default function ScanClient() {
             key={`mobile-${url}`}
             initialValue={url}
             compact
+            showProtocolPrefix={false}
             buttonLabel="SCAN"
             onSubmitUrl={(targetUrl) => startAudit(targetUrl, true)}
           />
@@ -666,6 +678,8 @@ type ResultsProps = {
 
 function ResultsState({ data, grouped, summary, overall, rating, onRescan }: ResultsProps) {
   const finalUrl = data.finalUrl || data.url;
+  const finalUrlLabel = displayUrl(finalUrl);
+  const originalUrlLabel = displayUrl(data.url);
   const lighthouse = data.lighthouse || {};
   const lighthouseScores = [
     { label: "SEO", value: lighthouse.seo ?? data.categories?.onPage?.score ?? overall },
@@ -680,9 +694,9 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
         <div>
           <p className="text-sm font-light text-[#616674]">Results for</p>
           <a href={finalUrl} target="_blank" rel="noreferrer" className="mt-1 block text-2xl font-light text-[#4F46E5]">
-            {finalUrl}
+            {finalUrlLabel}
           </a>
-          {finalUrl !== data.url && <p className="mt-1 text-sm font-light text-[#616674]">Redirected from {data.url}</p>}
+          {finalUrl !== data.url && <p className="mt-1 text-sm font-light text-[#616674]">Redirected from {originalUrlLabel}</p>}
           <p className="mt-2 text-sm font-light text-[#616674]">{timestamp(data.scannedAt)}</p>
         </div>
         <div className="no-print flex flex-wrap gap-3">
