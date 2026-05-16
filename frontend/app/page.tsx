@@ -45,16 +45,16 @@ function SiteBackdrop() {
     <>
       <div className="pointer-events-none fixed inset-0 -z-30">
         <Image
-          src="/w1.jpg"
+          src="/download.jpg"
           alt=""
           fill
           priority
           sizes="100vw"
-          className="h-full w-full object-cover object-center opacity-100 brightness-105 contrast-110"
+          className="h-full w-full scale-110 object-cover object-bottom opacity-95 blur-2xl saturate-125"
         />
       </div>
-      <div className="pointer-events-none fixed inset-0 -z-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.18)_0%,rgba(244,246,249,0.34)_48%,rgba(226,231,238,0.72)_100%)]" />
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_78%_10%,rgba(255,255,255,0.78),transparent_30rem)]" />
+      <div className="pointer-events-none fixed inset-0 -z-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(255,255,255,0.54)_44%,rgba(245,247,255,0.38)_100%)]" />
+      <div className="pointer-events-none fixed inset-0 -z-10 bg-white/18 backdrop-blur-[2px]" />
     </>
   );
 }
