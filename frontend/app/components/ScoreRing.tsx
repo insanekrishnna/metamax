@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 type ScoreRingProps = {
-  score: number;
+  score?: number | null;
   size: number;
   strokeWidth: number;
   label: string;
@@ -30,11 +30,12 @@ export function scoreRating(score: number) {
 
 export default function ScoreRing({ score, size, strokeWidth, label }: ScoreRingProps) {
   const [mounted, setMounted] = useState(false);
-  const normalizedScore = Math.max(0, Math.min(100, Math.round(score || 0)));
+  const hasScore = typeof score === "number" && Number.isFinite(score);
+  const normalizedScore = hasScore ? Math.max(0, Math.min(100, Math.round(score))) : 0;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const dashOffset = circumference - (mounted ? normalizedScore / 100 : 0) * circumference;
-  const color = scoreColor(normalizedScore);
+  const color = hasScore ? scoreColor(normalizedScore) : "#CBD5E1";
   const sizeClass =
     size >= 120
       ? "h-[104px] w-[104px] sm:h-[120px] sm:w-[120px]"
@@ -77,7 +78,7 @@ export default function ScoreRing({ score, size, strokeWidth, label }: ScoreRing
             size >= 100 ? "text-4xl sm:text-5xl" : size >= 80 ? "text-xl sm:text-2xl" : "text-sm sm:text-base"
           }`}
         >
-          {normalizedScore}
+          {hasScore ? normalizedScore : "n/a"}
         </span>
       </div>
       <p className="mt-2 text-xs font-light text-[#4B5563] sm:mt-3 sm:text-sm">{label}</p>

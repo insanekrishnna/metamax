@@ -51,10 +51,10 @@ type AuditData = {
   overallRating?: string;
   categories?: Record<string, AuditCategory>;
   lighthouse?: {
-    performance?: number;
-    accessibility?: number;
-    bestPractices?: number;
-    seo?: number;
+    performance?: number | null;
+    accessibility?: number | null;
+    bestPractices?: number | null;
+    seo?: number | null;
   };
 };
 
@@ -167,8 +167,16 @@ function downloadFile(content: string, filename: string, mimeType: string) {
   URL.revokeObjectURL(url);
 }
 
-function scoreValue(value?: number) {
-  return Math.round(value ?? 0);
+function scoreValue(value?: number | null) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.round(value) : 0;
+}
+
+function hasScore(value?: number | null) {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+function scoreReportLabel(value?: number | null) {
+  return hasScore(value) ? `${scoreValue(value)}/100` : "n/a";
 }
 
 function makeMarkdown(data: AuditData) {
@@ -191,10 +199,10 @@ function makeMarkdown(data: AuditData) {
     "",
     "## Lighthouse Scores",
     "",
-    `- SEO: ${scoreValue(lighthouse.seo)}/100`,
-    `- Performance: ${scoreValue(lighthouse.performance)}/100`,
-    `- Accessibility: ${scoreValue(lighthouse.accessibility)}/100`,
-    `- Best Practices: ${scoreValue(lighthouse.bestPractices)}/100`,
+    `- SEO: ${scoreReportLabel(lighthouse.seo)}`,
+    `- Performance: ${scoreReportLabel(lighthouse.performance)}`,
+    `- Accessibility: ${scoreReportLabel(lighthouse.accessibility)}`,
+    `- Best Practices: ${scoreReportLabel(lighthouse.bestPractices)}`,
     "",
     "## Core Web Vitals",
     ...vitals.map((vital) => `- ${vital.id}: ${vital.value} — ${ratingLabel(vital.status)}`),
@@ -220,11 +228,11 @@ function makeHtmlReport(data: AuditData) {
   const finalUrl = data.finalUrl || data.url;
   const overallScore = scoreValue(data.overallScore);
   const overallRating = data.overallRating || scoreRating(overallScore);
-  const scoreCards = [
-    ["SEO", lighthouse.seo ?? data.categories?.onPage?.score ?? overallScore],
-    ["Performance", lighthouse.performance ?? data.categories?.webVitals?.score ?? overallScore],
-    ["Accessibility", lighthouse.accessibility ?? 0],
-    ["Best Practices", lighthouse.bestPractices ?? 0],
+  const scoreCards: Array<[string, number | null | undefined]> = [
+    ["SEO", lighthouse.seo],
+    ["Performance", lighthouse.performance],
+    ["Accessibility", lighthouse.accessibility],
+    ["Best Practices", lighthouse.bestPractices],
   ];
   const renderChecks = (title: string, checks: AuditCheck[], color: string) => `
     <section>
@@ -271,7 +279,7 @@ function makeHtmlReport(data: AuditData) {
       <div class="score">${overallScore}/100 - ${escapeHtml(overallRating)}</div>
     </header>
     <section class="grid">
-      ${scoreCards.map(([label, value]) => `<div class="card"><span class="muted">${escapeHtml(label)}</span><strong>${scoreValue(Number(value))}/100</strong></div>`).join("")}
+      ${scoreCards.map(([label, value]) => `<div class="card"><span class="muted">${escapeHtml(label)}</span><strong>${scoreReportLabel(value)}</strong></div>`).join("")}
     </section>
     ${renderChecks("Critical Issues", grouped.critical, "#DC2626")}
     ${renderChecks("Warnings", grouped.important, "#D97706")}
@@ -669,10 +677,10 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
   const originalUrlLabel = displayUrl(data.url);
   const lighthouse = data.lighthouse || {};
   const lighthouseScores = [
-    { label: "SEO", value: lighthouse.seo ?? data.categories?.onPage?.score ?? overall },
-    { label: "Performance", value: lighthouse.performance ?? data.categories?.webVitals?.score ?? overall },
-    { label: "Accessibility", value: lighthouse.accessibility ?? 0 },
-    { label: "Best Practices", value: lighthouse.bestPractices ?? 0 },
+    { label: "SEO", value: lighthouse.seo },
+    { label: "Performance", value: lighthouse.performance },
+    { label: "Accessibility", value: lighthouse.accessibility },
+    { label: "Best Practices", value: lighthouse.bestPractices },
   ];
 
   return (
@@ -809,10 +817,10 @@ function AuditCheckRow({ check }: { check: AuditCheck }) {
 
 function LighthousePanel({ data }: { data: AuditData }) {
   const scores = [
-    { label: "Performance", value: data.lighthouse?.performance ?? data.categories?.webVitals?.score ?? 0 },
-    { label: "Accessibility", value: data.lighthouse?.accessibility ?? 0 },
-    { label: "Best Practices", value: data.lighthouse?.bestPractices ?? 0 },
-    { label: "SEO", value: data.lighthouse?.seo ?? data.categories?.onPage?.score ?? 0 },
+    { label: "Performance", value: data.lighthouse?.performance },
+    { label: "Accessibility", value: data.lighthouse?.accessibility },
+    { label: "Best Practices", value: data.lighthouse?.bestPractices },
+    { label: "SEO", value: data.lighthouse?.seo },
   ];
 
   return (

@@ -70,10 +70,10 @@ function unavailablePageSpeedResult(error) {
   return {
     cached: false,
     lighthouseScores: {
-      performance: 0,
-      accessibility: 0,
-      bestPractices: 0,
-      seo: 0,
+      performance: null,
+      accessibility: null,
+      bestPractices: null,
+      seo: null,
     },
     checks: unavailableChecks.map(([id, label, suggestion]) =>
       buildCheck({
