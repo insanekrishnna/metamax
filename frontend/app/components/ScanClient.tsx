@@ -513,13 +513,11 @@ function ExportDropdown({ data }: { data: AuditData }) {
   const items = [
     {
       label: "Export as PDF",
-      sublabel: "Print-ready report",
       icon: FileText,
       onClick: exportPdf,
     },
     {
       label: "Export as Markdown",
-      sublabel: "For docs and notes",
       icon: FileCode,
       onClick: () => {
         downloadFile(makeMarkdown(data), `metamax-audit-${domain}.md`, "text/markdown");
@@ -528,7 +526,6 @@ function ExportDropdown({ data }: { data: AuditData }) {
     },
     {
       label: "Export as HTML",
-      sublabel: "Standalone shareable file",
       icon: Globe,
       onClick: () => {
         downloadFile(makeHtmlReport(data), `metamax-audit-${domain}.html`, "text/html");
@@ -537,7 +534,6 @@ function ExportDropdown({ data }: { data: AuditData }) {
     },
     {
       label: "Export as JSON",
-      sublabel: "Raw data for developers",
       icon: Braces,
       onClick: () => {
         downloadFile(JSON.stringify(data, null, 2), `metamax-audit-${domain}.json`, "application/json");
@@ -563,13 +559,10 @@ function ExportDropdown({ data }: { data: AuditData }) {
               <button
                 key={item.label}
                 onClick={item.onClick}
-                className="flex w-full cursor-pointer items-start gap-3 rounded-md px-3 py-2.5 text-left hover:bg-white/70"
+                className="flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 text-left hover:bg-white/70"
               >
-                <Icon size={16} strokeWidth={1.7} className="mt-0.5 shrink-0 text-[#4F46E5]" />
-                <span>
-                  <span className="block text-[13px] font-normal text-[#0A0A0F]">{item.label}</span>
-                  <span className="block text-[11px] font-light text-[#616674]">{item.sublabel}</span>
-                </span>
+                <Icon size={16} strokeWidth={1.7} className="shrink-0 text-[#0A0A0F]" />
+                <span className="block text-[13px] font-normal text-[#0A0A0F]">{item.label}</span>
               </button>
             );
           })}
