@@ -45,7 +45,7 @@ function SiteBackdrop() {
     <>
       <div className="pointer-events-none fixed inset-0 -z-30">
         <Image
-          src="/download.jpg"
+          src="/b2.jpg"
           alt=""
           fill
           priority

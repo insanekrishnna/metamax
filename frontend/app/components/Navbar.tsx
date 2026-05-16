@@ -42,8 +42,8 @@ export default function Navbar({ children, variant = "default" }: NavbarProps) {
 
         {children ? (
           <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
-            <ToolsDropdown />
             <div className="hidden min-w-0 flex-1 justify-end md:flex">{children}</div>
+            <ToolsDropdown />
           </div>
         ) : (
           <nav className="flex items-center gap-2 sm:gap-3" aria-label={isHome ? "Homepage navigation" : "Main navigation"}>

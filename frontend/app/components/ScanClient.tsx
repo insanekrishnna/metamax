@@ -406,34 +406,21 @@ export default function ScanClient() {
     <main className="relative isolate min-h-screen overflow-x-hidden bg-transparent text-[#0A0A0F]">
       <ScanBackdrop />
       <div className="no-print">
-      <Navbar>
-        <div className="hidden w-full max-w-3xl md:block">
-          <UrlScanForm
-            key={`desktop-${url}`}
-            initialValue={url}
-            compact
-            showProtocolPrefix={false}
-            buttonLabel="SCAN"
-            onSubmitUrl={(targetUrl) => startAudit(targetUrl, true)}
-          />
-        </div>
-      </Navbar>
+        <Navbar>
+          <div className="w-full max-w-sm">
+            <UrlScanForm
+              key={`navbar-${url}`}
+              initialValue={url}
+              compact
+              showProtocolPrefix={false}
+              buttonLabel="Scan"
+              onSubmitUrl={(targetUrl) => startAudit(targetUrl, true)}
+            />
+          </div>
+        </Navbar>
       </div>
 
-      <div className="no-print mx-auto w-full max-w-7xl px-5 pt-8 sm:px-8">
-        <div className="mb-10 md:hidden">
-          <UrlScanForm
-            key={`mobile-${url}`}
-            initialValue={url}
-            compact
-            showProtocolPrefix={false}
-            buttonLabel="SCAN"
-            onSubmitUrl={(targetUrl) => startAudit(targetUrl, true)}
-          />
-        </div>
-      </div>
-
-      <div className="mx-auto w-full max-w-7xl px-5 pb-12 sm:px-8">
+      <div className="mx-auto w-full max-w-7xl px-5 pb-12 pt-8 sm:px-8 sm:pt-10">
         {status === "loading" && (
           <div className="no-print">
             <LoadingState steps={steps} />
@@ -464,7 +451,7 @@ function ScanBackdrop() {
     <>
       <div className="pointer-events-none fixed inset-0 -z-30">
         <Image
-          src="/download.jpg"
+          src="/b2.jpg"
           alt=""
           fill
           priority
@@ -713,8 +700,7 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
 
       <section className="grid gap-8 rounded-lg border border-white/60 bg-white/38 p-8 shadow-[0_28px_90px_rgba(15,23,42,0.10)] backdrop-blur-2xl lg:grid-cols-[180px_1fr_360px] lg:items-center">
         <div className="flex flex-col items-center">
-          <ScoreRing score={overall} size={120} strokeWidth={9} label="Overall Score" />
-          <p className="mt-1 text-sm font-light text-[#616674]">SEO + Performance</p>
+          <ScoreRing score={overall} size={120} strokeWidth={9} label="Total Evaluation" />
         </div>
         <div>
           <h1 className={`text-3xl font-light sm:text-[32px] ${scoreTextColor(overall)}`}>
@@ -731,7 +717,7 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
         </div>
       </section>
 
-      <section className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(340px,2fr)]">
+      <section className="grid items-start gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(340px,2fr)]">
         <SeoAuditPanel grouped={grouped} summary={summary} />
         <LighthousePanel data={data} />
       </section>
@@ -783,6 +769,7 @@ function CheckGroup({ title, checks }: { title: string; checks: AuditCheck[] }) 
 }
 
 function AuditCheckRow({ check }: { check: AuditCheck }) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const status = normalizeStatus(check.status);
   const statusClasses = {
     pass: "border-l-[#21A67A] text-[#21A67A]",
@@ -791,16 +778,29 @@ function AuditCheckRow({ check }: { check: AuditCheck }) {
   };
   const Icon = status === "pass" ? Check : status === "warning" ? AlertTriangle : X;
   const details = getDescription(check);
+  const canExpand = details.length > 150;
 
   return (
     <article
-      className={`rounded-lg border border-white/55 border-l-[3px] bg-white/36 px-4 py-4 backdrop-blur-xl transition hover:bg-white/48 ${statusClasses[status]}`}
+      className={`relative rounded-lg border border-white/55 border-l-[3px] bg-white/36 px-4 py-4 backdrop-blur-xl transition hover:bg-white/48 ${statusClasses[status]}`}
     >
-      <div className="flex gap-3">
+      {canExpand && (
+        <button
+          type="button"
+          onClick={() => setIsExpanded((current) => !current)}
+          aria-label={isExpanded ? "Collapse description" : "Show full description"}
+          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/60 bg-white/36 text-[#616674] backdrop-blur-xl transition hover:bg-white/58"
+        >
+          <ChevronDown size={16} strokeWidth={1.8} className={`transition ${isExpanded ? "rotate-180" : ""}`} />
+        </button>
+      )}
+      <div className="flex gap-3 pr-9">
         <Icon size={18} strokeWidth={1.8} className="mt-0.5 shrink-0" />
         <div>
           <h3 className="font-normal text-[#0A0A0F]">{check.label}</h3>
-          <p className="mt-1 text-sm font-light leading-6 text-[#616674]">{details}</p>
+          <p className={`mt-1 min-h-12 text-sm font-light leading-6 text-[#616674] ${canExpand && !isExpanded ? "line-clamp-2" : ""}`}>
+            {details}
+          </p>
         </div>
       </div>
     </article>
@@ -816,7 +816,7 @@ function LighthousePanel({ data }: { data: AuditData }) {
   ];
 
   return (
-    <aside className="rounded-lg border border-white/60 bg-white/38 p-6 backdrop-blur-2xl">
+    <aside className="rounded-lg border border-white/60 bg-white/38 p-6 backdrop-blur-2xl lg:sticky lg:bottom-8">
       <h2 className="text-xl font-light text-[#0A0A0F]">Lighthouse</h2>
       <p className="mt-6 text-xs font-light uppercase tracking-[0.2em] text-[#616674]">Lighthouse Scores</p>
       <div className="mt-5 grid grid-cols-2 gap-6">
