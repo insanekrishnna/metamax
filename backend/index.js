@@ -16,7 +16,7 @@ const port = Number(process.env.PORT || 3001);
 const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3000,http://127.0.0.1:3000';
 const rateLimitWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS || 3600000);
 const rateLimitMax = Number(process.env.RATE_LIMIT_MAX || 5);
-const host = process.env.HOST || '127.0.0.1';
+const host = process.env.HOST || '0.0.0.0';
 
 const allowedOrigins = frontendOrigin.split(',').map((origin) => origin.trim());
 
@@ -35,6 +35,10 @@ app.use(
   })
 );
 app.use(express.json());
+
+app.get('/', (_req, res) => {
+  res.json({ status: 'ok', service: 'metamax-backend' });
+});
 
 const auditStartLimiter = rateLimit({
   windowMs: rateLimitWindowMs,
