@@ -73,14 +73,37 @@ const DEFAULT_PRODUCTION_API_URL = "https://metamax-un13.onrender.com";
 const POLL_INTERVAL_MS = 2000;
 
 function normalizeApiBase(value: string) {
-  return value.replace(/\/+$/g, "");
+  return value.trim().replace(/\/+$/g, "");
 }
 
-const API_BASE = normalizeApiBase(
-  process.env.NEXT_PUBLIC_API_URL ||
-    process.env.NEXT_PUBLIC_BACKEND_URL ||
-    (process.env.NODE_ENV === "production" ? DEFAULT_PRODUCTION_API_URL : DEFAULT_LOCAL_API_URL)
-);
+function isVercelBackendProxy(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+  if (trimmed.startsWith("/")) return true;
+
+  try {
+    const url = new URL(trimmed);
+    return url.pathname.startsWith("/_/backend") || url.pathname.startsWith("/_backend");
+  } catch {
+    return false;
+  }
+}
+
+function resolveApiBase() {
+  const publicApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  if (publicApiUrl && (process.env.NODE_ENV !== "production" || !isVercelBackendProxy(publicApiUrl))) {
+    return normalizeApiBase(publicApiUrl);
+  }
+
+  if (process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_BACKEND_URL) {
+    return normalizeApiBase(process.env.NEXT_PUBLIC_BACKEND_URL);
+  }
+
+  return process.env.NODE_ENV === "production" ? DEFAULT_PRODUCTION_API_URL : DEFAULT_LOCAL_API_URL;
+}
+
+const API_BASE = resolveApiBase();
 
 const fallbackSteps: AuditStep[] = [
   { label: "Fetching page HTML", status: "processing" },

@@ -5,13 +5,6 @@
       "entrypoint": "frontend",
       "routePrefix": "/",
       "framework": "nextjs"
-    },
-    "backend": {
-      "entrypoint": "backend",
-      "routePrefix": "/_/backend",
-      "framework": "express",
-      "memory": 1024,
-      "maxDuration": 120
     }
   }
 }
