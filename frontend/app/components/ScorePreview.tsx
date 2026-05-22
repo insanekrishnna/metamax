@@ -32,7 +32,7 @@ export default function ScorePreview() {
           </div>
           <div className="hidden min-w-0 items-center gap-2 rounded-md border border-white/60 bg-white/34 px-4 py-2 text-[11px] font-light text-[#616674] backdrop-blur-xl sm:flex">
             <Lock size={12} strokeWidth={1.8} />
-            metamax.com
+            metamaxx.vercel.app
           </div>
           <div className="flex w-[54px] justify-end text-[#6B7280]">
             <Search size={16} strokeWidth={1.8} />
@@ -44,7 +44,7 @@ export default function ScorePreview() {
             <div className="flex flex-col gap-2.5 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-[10px] font-light uppercase tracking-widest text-[#616674]">Audit summary</p>
-                <h2 className="mt-1 break-words text-[21px] font-light text-[#0A0A0F] min-[360px]:text-[22px]">metamax.com</h2>
+                <h2 className="mt-1 break-words text-[21px] font-light text-[#0A0A0F] min-[360px]:text-[22px]">metamaxx.vercel.app</h2>
               </div>
               <div className="inline-flex w-fit items-center gap-2 rounded-md border border-white/60 bg-white/38 px-3 py-1 text-[10px] font-light text-[#4F46E5] backdrop-blur-xl">
                 <ShieldCheck size={11} strokeWidth={2} />
