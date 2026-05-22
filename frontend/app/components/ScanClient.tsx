@@ -323,6 +323,44 @@ function groupChecks(data: AuditData | null) {
   };
 }
 
+function orderedAuditChecks(grouped: ReturnType<typeof groupChecks>) {
+  return [...grouped.critical, ...grouped.important, ...grouped.passing];
+}
+
+function estimateCheckHeight(check: AuditCheck) {
+  const details = getDescription(check);
+  const titleLines = Math.max(1, Math.ceil(check.label.length / 34));
+  const detailLines = details.length > 150 ? 2 : Math.max(2, Math.ceil(details.length / 68));
+  return 58 + titleLines * 22 + detailLines * 22;
+}
+
+function estimateLighthouseHeight(data: AuditData) {
+  const vitalsCount = webVitalChecks(data).length;
+  return 390 + vitalsCount * 74;
+}
+
+function splitAuditChecks(checks: AuditCheck[], data: AuditData) {
+  return checks.reduce(
+    (columns, check) => {
+      const estimatedHeight = estimateCheckHeight(check);
+      if (columns.leftHeight <= columns.rightHeight) {
+        columns.left.push(check);
+        columns.leftHeight += estimatedHeight;
+      } else {
+        columns.right.push(check);
+        columns.rightHeight += estimatedHeight;
+      }
+      return columns;
+    },
+    {
+      left: [] as AuditCheck[],
+      right: [] as AuditCheck[],
+      leftHeight: 150,
+      rightHeight: estimateLighthouseHeight(data),
+    }
+  );
+}
+
 export default function ScanClient() {
   const searchParams = useSearchParams();
   const initialUrl = searchParams.get("url") || "https://example.com";
@@ -725,15 +763,49 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
         </div>
       </section>
 
-      <section className="grid min-w-0 items-start gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(340px,2fr)]">
-        <SeoAuditPanel grouped={grouped} summary={summary} />
-        <LighthousePanel data={data} />
-      </section>
+      <AuditBoard grouped={grouped} summary={summary} data={data} />
     </div>
   );
 }
 
-function SeoAuditPanel({ grouped, summary }: { grouped: ReturnType<typeof groupChecks>; summary: ReturnType<typeof scoreSummary> }) {
+function AuditBoard({
+  grouped,
+  summary,
+  data,
+}: {
+  grouped: ReturnType<typeof groupChecks>;
+  summary: ReturnType<typeof scoreSummary>;
+  data: AuditData;
+}) {
+  const checks = orderedAuditChecks(grouped);
+  const columns = splitAuditChecks(checks, data);
+
+  return (
+    <section className="grid min-w-0 items-start gap-5 lg:grid-cols-2 lg:gap-6">
+      <div className="min-w-0 space-y-4">
+        <AuditSummaryCard summary={summary} />
+        {columns.left.map((check) => (
+          <AuditCheckRow key={check.id || check.label} check={check} showStatusLabel />
+        ))}
+      </div>
+
+      <div className="min-w-0 space-y-4">
+        <LighthousePanel data={data} />
+        {columns.right.map((check) => (
+          <AuditCheckRow key={check.id || check.label} check={check} showStatusLabel />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function AuditSummaryCard({ summary }: { summary: ReturnType<typeof scoreSummary> }) {
+  const stats = [
+    { label: "Critical", value: summary.critical, color: "text-[#C84E4E]" },
+    { label: "Warnings", value: summary.warnings, color: "text-[#B9822D]" },
+    { label: "Passing", value: summary.passing, color: "text-[#21A67A]" },
+  ];
+
   return (
     <section className="min-w-0 rounded-lg border border-white/60 bg-white/38 p-3.5 backdrop-blur-2xl min-[380px]:p-4 sm:p-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
@@ -744,10 +816,17 @@ function SeoAuditPanel({ grouped, summary }: { grouped: ReturnType<typeof groupC
           <LegendDot color="bg-[#21A67A]" label={`${summary.passing} pass`} />
         </div>
       </div>
-
-      <CheckGroup title="CRITICAL" checks={grouped.critical} />
-      <CheckGroup title="IMPORTANT" checks={grouped.important} />
-      <CheckGroup title="PASSING" checks={grouped.passing} />
+      <p className="mt-4 text-sm font-light leading-6 text-[#616674]">
+        Prioritized checks for crawlability, metadata, web vitals, content quality, and social sharing.
+      </p>
+      <div className="mt-5 grid grid-cols-3 gap-2">
+        {stats.map((stat) => (
+          <div key={stat.label} className="min-w-0 rounded-lg border border-white/55 bg-white/30 px-3 py-3 backdrop-blur-xl">
+            <p className={`text-2xl font-light leading-none ${stat.color}`}>{stat.value}</p>
+            <p className="mt-2 truncate text-[10px] font-light uppercase tracking-[0.14em] text-[#616674]">{stat.label}</p>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
@@ -761,22 +840,13 @@ function LegendDot({ color, label }: { color: string; label: string }) {
   );
 }
 
-function CheckGroup({ title, checks }: { title: string; checks: AuditCheck[] }) {
-  if (!checks.length) return null;
-
-  return (
-    <div className="mt-8">
-      <p className="mb-4 text-xs font-light uppercase tracking-[0.16em] text-[#4F46E5] sm:tracking-[0.2em]">{title}</p>
-      <div className="space-y-3">
-        {checks.map((check) => (
-          <AuditCheckRow key={check.id || check.label} check={check} />
-        ))}
-      </div>
-    </div>
-  );
+function statusLabel(status: CheckStatus) {
+  if (status === "fail") return "Critical";
+  if (status === "warning") return "Important";
+  return "Passing";
 }
 
-function AuditCheckRow({ check }: { check: AuditCheck }) {
+function AuditCheckRow({ check, showStatusLabel = false }: { check: AuditCheck; showStatusLabel?: boolean }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const status = normalizeStatus(check.status);
   const statusClasses = {
@@ -805,7 +875,14 @@ function AuditCheckRow({ check }: { check: AuditCheck }) {
       <div className="flex min-w-0 gap-2.5 pr-8 sm:gap-3 sm:pr-9">
         <Icon size={18} strokeWidth={1.8} className="mt-0.5 shrink-0" />
         <div className="min-w-0">
-          <h3 className="break-words text-[15px] font-normal text-[#0A0A0F] sm:text-base">{check.label}</h3>
+          <div className="flex flex-col gap-2 min-[420px]:flex-row min-[420px]:items-center">
+            <h3 className="break-words text-[15px] font-normal text-[#0A0A0F] sm:text-base">{check.label}</h3>
+            {showStatusLabel && (
+              <span className="w-fit shrink-0 rounded-md border border-white/60 bg-white/36 px-2 py-0.5 text-[10px] font-light uppercase tracking-[0.12em] text-[#616674]">
+                {statusLabel(status)}
+              </span>
+            )}
+          </div>
           <p className={`mt-1 min-h-11 break-words text-[13px] font-light leading-5 text-[#616674] sm:min-h-12 sm:text-sm sm:leading-6 ${canExpand && !isExpanded ? "line-clamp-2" : ""}`}>
             {details}
           </p>
@@ -824,7 +901,7 @@ function LighthousePanel({ data }: { data: AuditData }) {
   ];
 
   return (
-    <aside className="min-w-0 rounded-lg border border-white/60 bg-white/38 p-3.5 backdrop-blur-2xl min-[380px]:p-4 sm:p-6 lg:sticky lg:bottom-8">
+    <aside className="min-w-0 rounded-lg border border-white/60 bg-white/38 p-3.5 backdrop-blur-2xl min-[380px]:p-4 sm:p-6">
       <h2 className="text-xl font-light text-[#0A0A0F]">Lighthouse</h2>
       <p className="mt-6 text-xs font-light uppercase tracking-[0.2em] text-[#616674]">Lighthouse Scores</p>
       <div className="mt-5 grid min-w-0 grid-cols-2 gap-3 min-[380px]:gap-4 sm:gap-6">
