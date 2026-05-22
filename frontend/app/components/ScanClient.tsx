@@ -58,15 +58,29 @@ type AuditData = {
   };
 };
 
+type JobStatus = "processing" | "done" | "error" | "failed";
+
 type JobResponse = {
   jobId?: string;
-  status?: "processing" | "done" | "error";
+  status?: JobStatus;
   steps?: AuditStep[];
   data?: AuditData | null;
   error?: string;
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
+const DEFAULT_LOCAL_API_URL = "http://localhost:3001";
+const DEFAULT_PRODUCTION_API_URL = "https://metamax-un13.onrender.com";
+const POLL_INTERVAL_MS = 2000;
+
+function normalizeApiBase(value: string) {
+  return value.replace(/\/+$/g, "");
+}
+
+const API_BASE = normalizeApiBase(
+  process.env.NEXT_PUBLIC_API_URL ||
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    (process.env.NODE_ENV === "production" ? DEFAULT_PRODUCTION_API_URL : DEFAULT_LOCAL_API_URL)
+);
 
 const fallbackSteps: AuditStep[] = [
   { label: "Fetching page HTML", status: "processing" },
@@ -177,6 +191,48 @@ function hasScore(value?: number | null) {
 
 function scoreReportLabel(value?: number | null) {
   return hasScore(value) ? `${scoreValue(value)}/100` : "n/a";
+}
+
+function getPayloadError(payload: unknown) {
+  if (payload && typeof payload === "object" && "error" in payload) {
+    const error = (payload as { error?: unknown }).error;
+    if (typeof error === "string" && error.trim()) return error;
+  }
+
+  if (payload && typeof payload === "object" && "message" in payload) {
+    const message = (payload as { message?: unknown }).message;
+    if (typeof message === "string" && message.trim()) return message;
+  }
+
+  return "";
+}
+
+function isFailureStatus(status: JobStatus | undefined) {
+  return status === "error" || status === "failed";
+}
+
+async function readJsonResponse<T>(response: Response, context: string): Promise<T> {
+  const text = await response.text();
+  let payload: unknown = null;
+
+  if (!text.trim()) {
+    throw new Error(`${context} returned an empty response (${response.status}).`);
+  }
+
+  if (text) {
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      const preview = text.replace(/\s+/g, " ").trim().slice(0, 180) || "empty response";
+      throw new Error(`${context} returned a non-JSON response (${response.status}): ${preview}`);
+    }
+  }
+
+  if (!response.ok) {
+    throw new Error(getPayloadError(payload) || `${context} failed with status ${response.status}.`);
+  }
+
+  return payload as T;
 }
 
 function makeMarkdown(data: AuditData) {
@@ -369,7 +425,7 @@ export default function ScanClient() {
   const [steps, setSteps] = useState<AuditStep[]>(fallbackSteps);
   const [data, setData] = useState<AuditData | null>(null);
   const [error, setError] = useState("");
-  const intervalRef = useRef<number | null>(null);
+  const pollTimeoutRef = useRef<number | null>(null);
 
   const startAudit = useCallback(async (targetUrl: string, force = false) => {
     setUrl(targetUrl);
@@ -378,9 +434,9 @@ export default function ScanClient() {
     setError("");
     setSteps(fallbackSteps);
 
-    if (intervalRef.current) {
-      window.clearInterval(intervalRef.current);
-      intervalRef.current = null;
+    if (pollTimeoutRef.current) {
+      window.clearTimeout(pollTimeoutRef.current);
+      pollTimeoutRef.current = null;
     }
 
     try {
@@ -389,45 +445,73 @@ export default function ScanClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: targetUrl, force }),
       });
-      const job = (await response.json()) as JobResponse;
-      if (!response.ok || !job.jobId) {
-        throw new Error(job.error || "Unable to start audit.");
+
+      const job = await readJsonResponse<JobResponse>(response, "Starting audit");
+      if (job.steps?.length) setSteps(job.steps);
+
+      if (job.status === "done" && job.data) {
+        setData(job.data);
+        setStatus("done");
+        return;
       }
 
-      const poll = async () => {
+      if (isFailureStatus(job.status)) {
+        throw new Error(job.error || "Audit failed.");
+      }
+
+      if (!job.jobId) {
+        throw new Error("Audit start response did not include a job id.");
+      }
+
+      const poll = async (): Promise<boolean> => {
         const pollResponse = await fetch(`${API_BASE}/audit/${job.jobId}`);
-        const payload = (await pollResponse.json()) as JobResponse;
-        if (!pollResponse.ok) {
-          throw new Error(payload.error || "Unable to fetch audit status.");
-        }
+        const payload = await readJsonResponse<JobResponse>(pollResponse, "Fetching audit status");
 
         if (payload.steps?.length) setSteps(payload.steps);
 
-        if (payload.status === "done" && payload.data) {
-          if (intervalRef.current) window.clearInterval(intervalRef.current);
-          intervalRef.current = null;
+        if (payload.status === "done") {
+          if (!payload.data) {
+            throw new Error("Audit completed without report data.");
+          }
+
+          if (pollTimeoutRef.current) {
+            window.clearTimeout(pollTimeoutRef.current);
+            pollTimeoutRef.current = null;
+          }
           setData(payload.data);
           setStatus("done");
+          return true;
         }
 
-        if (payload.status === "error") {
-          if (intervalRef.current) window.clearInterval(intervalRef.current);
-          intervalRef.current = null;
-          setError(payload.error || "Audit failed.");
-          setStatus("error");
+        if (isFailureStatus(payload.status)) {
+          throw new Error(payload.error || "Audit failed.");
         }
+
+        return false;
       };
 
-      await poll();
-      intervalRef.current = window.setInterval(() => {
-        poll().catch((pollError) => {
-          if (intervalRef.current) window.clearInterval(intervalRef.current);
-          intervalRef.current = null;
-          setError(pollError.message || "Audit failed.");
-          setStatus("error");
-        });
-      }, 2000);
+      const schedulePoll = () => {
+        pollTimeoutRef.current = window.setTimeout(() => {
+          poll()
+            .then((isComplete) => {
+              if (!isComplete) schedulePoll();
+            })
+            .catch((pollError) => {
+              if (pollTimeoutRef.current) window.clearTimeout(pollTimeoutRef.current);
+              pollTimeoutRef.current = null;
+              setError(pollError instanceof Error ? pollError.message : "Audit failed.");
+              setStatus("error");
+            });
+        }, POLL_INTERVAL_MS);
+      };
+
+      const isComplete = await poll();
+      if (!isComplete) schedulePoll();
     } catch (requestError) {
+      if (pollTimeoutRef.current) {
+        window.clearTimeout(pollTimeoutRef.current);
+        pollTimeoutRef.current = null;
+      }
       setError(requestError instanceof Error ? requestError.message : "Audit failed.");
       setStatus("error");
     }
@@ -439,7 +523,10 @@ export default function ScanClient() {
     }, 0);
     return () => {
       window.clearTimeout(timeout);
-      if (intervalRef.current) window.clearInterval(intervalRef.current);
+      if (pollTimeoutRef.current) {
+        window.clearTimeout(pollTimeoutRef.current);
+        pollTimeoutRef.current = null;
+      }
     };
   }, [initialUrl, startAudit]);
 
