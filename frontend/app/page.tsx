@@ -43,7 +43,7 @@ export default function Home() {
 function SiteBackdrop() {
   return (
     <>
-      <div className="pointer-events-none fixed inset-0 -z-30">
+      <div className="pointer-events-none fixed inset-0 -z-30 overflow-hidden">
         <Image
           src="/b2.jpg"
           alt=""
@@ -61,25 +61,25 @@ function SiteBackdrop() {
 
 function HeroSection() {
   return (
-    <section className="relative isolate overflow-hidden px-4 pb-18 pt-24 sm:px-6 sm:pb-24 sm:pt-32 lg:px-8">
-      <div className="relative z-10 mx-auto grid w-full max-w-[1200px] items-start gap-10 sm:gap-12 lg:grid-cols-12 lg:gap-15">
+    <section className="relative isolate overflow-hidden px-3 pb-14 pt-21 min-[360px]:px-4 min-[360px]:pb-18 min-[360px]:pt-24 sm:px-6 sm:pb-24 sm:pt-32 lg:px-8">
+      <div className="relative z-10 mx-auto grid w-full max-w-[1200px] items-start gap-8 min-[360px]:gap-10 sm:gap-12 lg:grid-cols-12 lg:gap-15">
         <div className="flex flex-col items-start text-left lg:col-span-5">
-          <p className="inline-flex items-center gap-1 rounded-full border border-[#4F46E5]/45 bg-[linear-gradient(135deg,rgba(255,255,255,0.84),rgba(238,242,255,0.52))] px-3 py-1.5 text-xs font-light text-[#32364C] shadow-[inset_0_1px_0_rgba(255,255,255,0.86),0_14px_44px_rgba(79,70,229,0.16)] ring-1 ring-white/75 backdrop-blur-2xl">
+          <p className="inline-flex max-w-full items-center gap-1 rounded-full border border-[#4F46E5]/45 bg-[linear-gradient(135deg,rgba(255,255,255,0.84),rgba(238,242,255,0.52))] px-3 py-1.5 text-[11px] font-light text-[#32364C] shadow-[inset_0_1px_0_rgba(255,255,255,0.86),0_14px_44px_rgba(79,70,229,0.16)] ring-1 ring-white/75 backdrop-blur-2xl min-[360px]:text-xs">
             <Image src="/metamaxx.png" alt="" width={16} height={16} className="h-3.5 w-auto drop-shadow-[0_0_8px_rgba(79,70,229,0.38)]" />
-            <span>30+ performance audits</span>
+            <span className="min-w-0 truncate">30+ performance audits</span>
           </p>
 
-          <h1 className="mt-9 max-w-[600px] text-[38px] font-light leading-[1.05] text-[#080A16] min-[380px]:text-[42px] sm:mt-10 sm:text-[56px]">
+          <h1 className="mt-8 max-w-[600px] text-[34px] font-light leading-[1.05] text-[#080A16] min-[360px]:mt-9 min-[380px]:text-[42px] sm:mt-10 sm:text-[56px]">
             Websites have hidden bottlenecks
           </h1>
-          <h3 className="mt-7 max-w-[560px] text-[24px] font-light leading-tight text-[#4F46E5] sm:mt-8 sm:text-[28px]">
+          <h3 className="mt-6 max-w-[560px] text-[21px] font-light leading-tight text-[#4F46E5] min-[360px]:mt-7 min-[360px]:text-[24px] sm:mt-8 sm:text-[28px]">
             Know exactly what to fix
           </h3>
-          <p className="mt-5 max-w-[520px] text-sm font-light leading-[1.7] text-[#4B5563] sm:mt-6 sm:text-[15px]">
+          <p className="mt-4 max-w-[520px] text-[13px] font-light leading-[1.7] text-[#4B5563] min-[360px]:mt-5 min-[360px]:text-sm sm:mt-6 sm:text-[15px]">
             Paste URL and get a focused audit for search, performance, web vitals in one clean view.
           </p>
 
-          <div className="mt-8 w-full max-w-[560px] sm:mt-10">
+          <div className="mt-7 w-full max-w-[560px] min-[360px]:mt-8 sm:mt-10">
             <UrlScanForm variant="hero" buttonLabel="Scan site" />
           </div>
         </div>

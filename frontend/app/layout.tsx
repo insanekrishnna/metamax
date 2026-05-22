@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import SmoothScroll from "./components/SmoothScroll";
 import "lenis/dist/lenis.css";
@@ -13,6 +13,11 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Metamax | Free SEO + Performance Audits",
   description: "Analyze any website and get SEO, Lighthouse, and Core Web Vitals checks in seconds.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

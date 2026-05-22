@@ -24,7 +24,7 @@ export default function ScorePreview() {
   return (
     <section id="preview" className="relative w-full" aria-label="Metamax product preview">
       <div className="relative overflow-hidden rounded-lg border border-white/60 bg-white/38 text-left shadow-[0_28px_90px_rgba(15,23,42,0.12)] backdrop-blur-2xl">
-        <div className="flex items-center justify-between gap-4 border-b border-white/55 bg-white/30 px-4 py-2.5 backdrop-blur-xl sm:px-5">
+        <div className="flex items-center justify-between gap-3 border-b border-white/55 bg-white/30 px-3 py-2.5 backdrop-blur-xl min-[360px]:gap-4 min-[360px]:px-4 sm:px-5">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-[#FF605C]/80" />
             <span className="h-2 w-2 rounded-full bg-[#FFBD44]/80" />
@@ -39,12 +39,12 @@ export default function ScorePreview() {
           </div>
         </div>
 
-        <div className="grid gap-3.5 p-3.5 sm:p-5 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="grid gap-3 p-3 min-[360px]:gap-3.5 min-[360px]:p-3.5 sm:p-5 xl:grid-cols-[minmax(0,1fr)_280px]">
           <div className="min-w-0">
             <div className="flex flex-col gap-2.5 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-[10px] font-light uppercase tracking-widest text-[#616674]">Audit summary</p>
-                <h2 className="mt-1 text-[22px] font-light text-[#0A0A0F]">metamax.com</h2>
+                <h2 className="mt-1 break-words text-[21px] font-light text-[#0A0A0F] min-[360px]:text-[22px]">metamax.com</h2>
               </div>
               <div className="inline-flex w-fit items-center gap-2 rounded-md border border-white/60 bg-white/38 px-3 py-1 text-[10px] font-light text-[#4F46E5] backdrop-blur-xl">
                 <ShieldCheck size={11} strokeWidth={2} />
@@ -52,14 +52,14 @@ export default function ScorePreview() {
               </div>
             </div>
 
-            <div className="mt-5 grid grid-cols-2 gap-2.5">
+            <div className="mt-5 grid grid-cols-2 gap-2">
               {scores.map((score) => (
-                <div key={score.label} className="rounded-lg border border-white/60 bg-white/38 p-3.5 backdrop-blur-xl transition-colors hover:border-white/90">
+                <div key={score.label} className="min-w-0 rounded-lg border border-white/60 bg-white/38 p-3 backdrop-blur-xl transition-colors hover:border-white/90 min-[360px]:p-3.5">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-[31px] font-light leading-none text-[#0A0A0F]">{score.value}</p>
-                    <span className={`text-[10px] font-light ${score.tone}`}>{score.meta}</span>
+                    <p className="text-[27px] font-light leading-none text-[#0A0A0F] min-[360px]:text-[31px]">{score.value}</p>
+                    <span className={`shrink-0 text-[10px] font-light ${score.tone}`}>{score.meta}</span>
                   </div>
-                  <p className="mt-2.5 text-[10px] font-light uppercase tracking-widest text-[#616674]">{score.label}</p>
+                  <p className="mt-2.5 truncate text-[10px] font-light uppercase tracking-widest text-[#616674]">{score.label}</p>
                 </div>
               ))}
             </div>
@@ -69,7 +69,7 @@ export default function ScorePreview() {
                 const Icon = row.icon;
                 const isPass = row.tone === "pass";
                 return (
-                  <div key={row.text} className="flex items-center justify-between gap-3 border-b border-white/60 px-4 py-2.5 last:border-b-0">
+                  <div key={row.text} className="flex items-center justify-between gap-2.5 border-b border-white/60 px-3 py-2.5 last:border-b-0 min-[360px]:gap-3 min-[360px]:px-4">
                     <div className="flex min-w-0 items-center gap-3">
                       <span
                         className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md border backdrop-blur-xl ${
@@ -78,7 +78,7 @@ export default function ScorePreview() {
                       >
                         <Icon size={16} strokeWidth={1.9} />
                       </span>
-                      <span className="truncate text-[13px] font-light text-[#374151]/90">{row.text}</span>
+                      <span className="min-w-0 truncate text-[12px] font-light text-[#374151]/90 min-[360px]:text-[13px]">{row.text}</span>
                     </div>
                     <span
                       className={`shrink-0 rounded-md border px-2 py-1 text-[10px] font-light backdrop-blur-xl ${
@@ -93,7 +93,7 @@ export default function ScorePreview() {
             </div>
           </div>
 
-          <aside className="grid gap-2.5 rounded-lg border border-white/60 bg-white/34 p-3.5 backdrop-blur-xl">
+          <aside className="grid min-w-0 gap-2.5 rounded-lg border border-white/60 bg-white/34 p-3 backdrop-blur-xl min-[360px]:p-3.5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-light uppercase tracking-widest text-[#616674]">Overall</p>
@@ -105,8 +105,8 @@ export default function ScorePreview() {
             <div className="space-y-2.5">
               {sideChecks.map((check) => (
                 <div key={check.label} className="flex items-center justify-between gap-3 border-t border-white/65 pt-2.5">
-                  <span className="text-[13px] font-light text-[#616674]">{check.label}</span>
-                  <span className={`text-[13px] font-normal ${check.tone}`}>{check.value}</span>
+                  <span className="min-w-0 truncate text-[13px] font-light text-[#616674]">{check.label}</span>
+                  <span className={`shrink-0 text-[13px] font-normal ${check.tone}`}>{check.value}</span>
                 </div>
               ))}
             </div>

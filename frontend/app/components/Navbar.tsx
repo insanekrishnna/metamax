@@ -34,7 +34,7 @@ export default function Navbar({ children, variant = "default" }: NavbarProps) {
           : "sticky top-0 z-50 border-b border-white/55 bg-white/34 shadow-[0_1px_0_rgba(255,255,255,0.38),0_18px_60px_rgba(15,23,42,0.05)] backdrop-blur-[30px]"
       }
     >
-      <div className={`mx-auto flex h-14 w-full max-w-[1200px] items-center justify-between gap-2.5 max-[360px]:h-12 sm:gap-4 ${isHome ? "" : "px-3 sm:px-8"}`}>
+      <div className={`mx-auto flex h-14 w-full max-w-[1200px] items-center justify-between gap-2 max-[360px]:h-12 sm:gap-4 ${isHome ? "" : "px-3 sm:px-8"}`}>
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <Image src="/metamaxx.png" alt="Metamax logo" width={28} height={28} className="h-5 w-auto sm:h-6" priority />
           <span className="text-[15px] font-medium text-[#0A0A0F] max-[360px]:hidden">Metamax</span>
@@ -53,7 +53,7 @@ export default function Navbar({ children, variant = "default" }: NavbarProps) {
             </Link>
           </div>
         ) : (
-          <nav className="flex items-center gap-2 sm:gap-3" aria-label={isHome ? "Homepage navigation" : "Main navigation"}>
+          <nav className="flex min-w-0 items-center gap-2 sm:gap-3" aria-label={isHome ? "Homepage navigation" : "Main navigation"}>
             <ToolsDropdown />
             <Link
               href="/scan"
@@ -97,14 +97,14 @@ function ToolsDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full z-50 mt-3 w-[336px] max-w-[calc(100vw-2rem)] rounded-lg border border-white/70 bg-[rgba(255,255,255,0.97)] p-2.5 shadow-[0_30px_90px_rgba(15,23,42,0.14)] backdrop-blur-[34px]">
-          <div className="grid grid-cols-2 gap-2.5">
+        <div className="absolute right-0 top-full z-50 mt-3 w-[336px] max-w-[calc(100vw-1.5rem)] rounded-lg border border-white/70 bg-[rgba(255,255,255,0.97)] p-2.5 shadow-[0_30px_90px_rgba(15,23,42,0.14)] backdrop-blur-[34px] max-[340px]:fixed max-[340px]:left-3 max-[340px]:right-3 max-[340px]:top-12 max-[340px]:mt-2 max-[340px]:w-auto max-[340px]:max-w-none">
+          <div className="grid grid-cols-1 gap-2 min-[340px]:grid-cols-2 min-[340px]:gap-2.5">
             {tools.map((tool) => (
               <Link
                 key={tool}
                 href="/scan"
                 onClick={() => setIsOpen(false)}
-                className="rounded-md border border-white/0 px-3 py-3 text-[13px] font-light text-[#111827] transition hover:border-white/70 hover:bg-white/58"
+                className="min-w-0 rounded-md border border-white/0 px-3 py-2.5 text-[13px] font-light text-[#111827] transition hover:border-white/70 hover:bg-white/58 min-[340px]:py-3"
               >
                 {tool}
               </Link>

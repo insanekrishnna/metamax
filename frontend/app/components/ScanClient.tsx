@@ -457,7 +457,7 @@ export default function ScanClient() {
 function ScanBackdrop() {
   return (
     <>
-      <div className="pointer-events-none fixed inset-0 -z-30">
+      <div className="pointer-events-none fixed inset-0 -z-30 overflow-hidden">
         <Image
           src="/b2.jpg"
           alt=""
@@ -550,7 +550,7 @@ function ExportDropdown({ data }: { data: AuditData }) {
   ];
 
   return (
-    <div ref={dropdownRef} className="relative">
+    <div ref={dropdownRef} className="relative min-w-0">
       <button
         onClick={() => setIsOpen((current) => !current)}
         className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-white/60 bg-white/28 px-3 py-2 text-[13px] font-light text-[#0A0A0F] backdrop-blur-2xl transition hover:bg-white/48 sm:w-auto sm:px-4"
@@ -559,7 +559,7 @@ function ExportDropdown({ data }: { data: AuditData }) {
         <ChevronDown size={16} strokeWidth={1.8} />
       </button>
       {isOpen && (
-        <div className="absolute right-0 top-full z-50 mt-2 min-w-52 rounded-lg border border-white/60 bg-white/52 p-1 shadow-[0_24px_70px_rgba(15,23,42,0.14)] backdrop-blur-2xl">
+        <div className="absolute right-0 top-full z-50 mt-2 w-52 max-w-[calc(100vw-1.5rem)] rounded-lg border border-white/60 bg-white/52 p-1 shadow-[0_24px_70px_rgba(15,23,42,0.14)] backdrop-blur-2xl">
           {items.map((item) => {
             const Icon = item.icon;
             return (
@@ -589,18 +589,18 @@ function LoadingState({ steps }: { steps: AuditStep[] }) {
   const completedCount = steps.filter((step) => step.status === "done").length;
 
   return (
-    <section className="flex min-h-[calc(100vh-180px)] flex-col items-center justify-center px-4 text-center">
-      <div className="w-full max-w-xl rounded-lg border border-white/65 bg-white/34 p-6 text-left shadow-[0_34px_120px_rgba(15,23,42,0.10)] backdrop-blur-[34px]">
-        <div className="flex items-center gap-4">
+    <section className="flex min-h-[calc(100vh-180px)] flex-col items-center justify-center px-3 text-center min-[360px]:px-4">
+      <div className="w-full max-w-xl rounded-lg border border-white/65 bg-white/34 p-4 text-left shadow-[0_34px_120px_rgba(15,23,42,0.10)] backdrop-blur-[34px] min-[380px]:p-6">
+        <div className="flex min-w-0 items-center gap-3 min-[380px]:gap-4">
           <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/70 bg-white/38">
             <span className="absolute h-2.5 w-2.5 animate-ping rounded-full bg-[#4F46E5]/40" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#4F46E5]" />
           </span>
           <div className="min-w-0">
-            <h1 className="text-xl font-light text-[#0A0A0F]">Building report</h1>
+            <h1 className="text-lg font-light text-[#0A0A0F] min-[380px]:text-xl">Building report</h1>
             <p className="mt-1 truncate text-sm font-light text-[#616674]">{activeStep}</p>
           </div>
-          <span className="ml-auto text-xs font-light text-[#616674]">{completedCount}/{steps.length}</span>
+          <span className="ml-auto shrink-0 text-xs font-light text-[#616674]">{completedCount}/{steps.length}</span>
         </div>
 
         <div className="mt-6 overflow-hidden rounded-full border border-white/60 bg-white/36">
@@ -613,13 +613,13 @@ function LoadingState({ steps }: { steps: AuditStep[] }) {
           <div className="h-3 w-2/3 animate-pulse rounded-full bg-white/38 [animation-delay:240ms]" />
         </div>
 
-        <div className="mt-7 grid gap-2 sm:grid-cols-2">
+        <div className="mt-7 grid min-w-0 gap-2 sm:grid-cols-2">
           {steps.map((step) => {
             const isDone = step.status === "done";
             const isActive = step.status === "processing";
 
             return (
-              <div key={step.label} className="flex items-center gap-3 rounded-md border border-white/45 bg-white/20 px-3 py-2.5">
+              <div key={step.label} className="flex min-w-0 items-center gap-3 overflow-hidden rounded-md border border-white/45 bg-white/20 px-3 py-2.5">
                 <span
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
                     isDone
@@ -631,7 +631,7 @@ function LoadingState({ steps }: { steps: AuditStep[] }) {
                 >
                   {isDone ? <Check size={13} strokeWidth={1.8} /> : isActive ? <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#4F46E5]" /> : null}
                 </span>
-                <span className={`truncate text-[12px] font-light ${isActive ? "text-[#0A0A0F]" : isDone ? "text-[#4B5563]" : "text-[#8D93A0]"}`}>
+                <span className={`min-w-0 truncate text-[12px] font-light ${isActive ? "text-[#0A0A0F]" : isDone ? "text-[#4B5563]" : "text-[#8D93A0]"}`}>
                   {step.label}
                 </span>
               </div>
@@ -645,12 +645,12 @@ function LoadingState({ steps }: { steps: AuditStep[] }) {
 
 function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
-    <section className="mx-auto flex min-h-[calc(100vh-180px)] max-w-xl flex-col items-center justify-center text-center">
+    <section className="mx-auto flex min-h-[calc(100vh-180px)] max-w-xl flex-col items-center justify-center px-4 text-center">
       <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-white/60 bg-white/44 text-[#C84E4E] backdrop-blur-2xl">
         <AlertTriangle size={28} strokeWidth={1.8} />
       </div>
-      <h1 className="mt-6 text-3xl font-light text-[#0A0A0F]">Audit could not finish</h1>
-      <p className="mt-3 font-light text-[#616674]">{message}</p>
+      <h1 className="mt-6 text-2xl font-light text-[#0A0A0F] sm:text-3xl">Audit could not finish</h1>
+      <p className="mt-3 break-words font-light text-[#616674]">{message}</p>
       <button
         onClick={onRetry}
         className="mt-8 inline-flex items-center gap-2 rounded-md bg-[#090A12] px-5 py-2.5 text-sm font-normal text-white transition hover:bg-[#1A1B24]"
@@ -684,17 +684,17 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
   ];
 
   return (
-    <div className="scan-results-section space-y-8">
+    <div className="scan-results-section min-w-0 space-y-8">
       <section className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
-        <div>
+        <div className="min-w-0">
           <p className="text-sm font-light text-[#616674]">Results for</p>
-          <a href={finalUrl} target="_blank" rel="noreferrer" className="mt-1 block text-2xl font-light text-[#4F46E5]">
+          <a href={finalUrl} target="_blank" rel="noreferrer" className="mt-1 block max-w-full break-words text-xl font-light leading-tight text-[#4F46E5] [overflow-wrap:anywhere] min-[360px]:text-[22px] sm:text-2xl">
             {finalUrlLabel}
           </a>
-          {finalUrl !== data.url && <p className="mt-1 text-sm font-light text-[#616674]">Redirected from {originalUrlLabel}</p>}
+          {finalUrl !== data.url && <p className="mt-1 break-words text-sm font-light text-[#616674] [overflow-wrap:anywhere]">Redirected from {originalUrlLabel}</p>}
           <p className="mt-2 text-sm font-light text-[#616674]">{timestamp(data.scannedAt)}</p>
         </div>
-        <div className="no-print grid w-full grid-cols-2 gap-2.5 sm:flex sm:w-auto sm:flex-wrap sm:gap-3">
+        <div className="no-print grid w-full grid-cols-1 gap-2.5 min-[340px]:grid-cols-2 sm:flex sm:w-auto sm:flex-wrap sm:gap-3">
           <ExportDropdown data={data} />
           <button
             onClick={onRescan}
@@ -706,11 +706,11 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
         </div>
       </section>
 
-      <section className="grid gap-5 rounded-lg border border-white/60 bg-white/38 p-4 shadow-[0_28px_90px_rgba(15,23,42,0.10)] backdrop-blur-2xl min-[380px]:p-5 sm:gap-6 sm:p-8 lg:grid-cols-[180px_1fr_360px] lg:items-center">
+      <section className="grid min-w-0 gap-5 rounded-lg border border-white/60 bg-white/38 p-4 shadow-[0_28px_90px_rgba(15,23,42,0.10)] backdrop-blur-2xl min-[380px]:p-5 sm:gap-6 sm:p-8 lg:grid-cols-[180px_1fr_360px] lg:items-center">
         <div className="flex flex-col items-center">
           <ScoreRing score={overall} size={120} strokeWidth={9} label="Total Evaluation" />
         </div>
-        <div>
+        <div className="min-w-0 text-center sm:text-left">
           <h1 className={`text-3xl font-light sm:text-[32px] ${scoreTextColor(overall)}`}>
             {rating}
           </h1>
@@ -718,14 +718,14 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
             {summary.critical} critical · {summary.warnings} warnings · {summary.passing} passing
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-3 min-[380px]:gap-4 sm:grid-cols-4 lg:grid-cols-4">
+        <div className="grid min-w-0 grid-cols-2 gap-3 min-[380px]:gap-4 sm:grid-cols-4 lg:grid-cols-4">
           {lighthouseScores.map((score) => (
             <ScoreRing key={score.label} score={score.value} size={64} strokeWidth={6} label={score.label} />
           ))}
         </div>
       </section>
 
-      <section className="grid items-start gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(340px,2fr)]">
+      <section className="grid min-w-0 items-start gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(340px,2fr)]">
         <SeoAuditPanel grouped={grouped} summary={summary} />
         <LighthousePanel data={data} />
       </section>
@@ -735,7 +735,7 @@ function ResultsState({ data, grouped, summary, overall, rating, onRescan }: Res
 
 function SeoAuditPanel({ grouped, summary }: { grouped: ReturnType<typeof groupChecks>; summary: ReturnType<typeof scoreSummary> }) {
   return (
-    <section className="rounded-lg border border-white/60 bg-white/38 p-3.5 backdrop-blur-2xl min-[380px]:p-4 sm:p-6">
+    <section className="min-w-0 rounded-lg border border-white/60 bg-white/38 p-3.5 backdrop-blur-2xl min-[380px]:p-4 sm:p-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <h2 className="text-xl font-light text-[#0A0A0F]">SEO Audit</h2>
         <div className="flex flex-wrap gap-3 text-xs font-light text-[#616674]">
@@ -790,7 +790,7 @@ function AuditCheckRow({ check }: { check: AuditCheck }) {
 
   return (
     <article
-      className={`relative rounded-lg border border-white/55 border-l-[3px] bg-white/36 px-3 py-4 backdrop-blur-xl transition hover:bg-white/48 sm:px-4 ${statusClasses[status]}`}
+      className={`relative min-w-0 rounded-lg border border-white/55 border-l-[3px] bg-white/36 px-3 py-4 backdrop-blur-xl transition hover:bg-white/48 sm:px-4 ${statusClasses[status]}`}
     >
       {canExpand && (
         <button
@@ -802,11 +802,11 @@ function AuditCheckRow({ check }: { check: AuditCheck }) {
           <ChevronDown size={16} strokeWidth={1.8} className={`transition ${isExpanded ? "rotate-180" : ""}`} />
         </button>
       )}
-      <div className="flex gap-2.5 pr-8 sm:gap-3 sm:pr-9">
+      <div className="flex min-w-0 gap-2.5 pr-8 sm:gap-3 sm:pr-9">
         <Icon size={18} strokeWidth={1.8} className="mt-0.5 shrink-0" />
-        <div>
-          <h3 className="text-[15px] font-normal text-[#0A0A0F] sm:text-base">{check.label}</h3>
-          <p className={`mt-1 min-h-11 text-[13px] font-light leading-5 text-[#616674] sm:min-h-12 sm:text-sm sm:leading-6 ${canExpand && !isExpanded ? "line-clamp-2" : ""}`}>
+        <div className="min-w-0">
+          <h3 className="break-words text-[15px] font-normal text-[#0A0A0F] sm:text-base">{check.label}</h3>
+          <p className={`mt-1 min-h-11 break-words text-[13px] font-light leading-5 text-[#616674] sm:min-h-12 sm:text-sm sm:leading-6 ${canExpand && !isExpanded ? "line-clamp-2" : ""}`}>
             {details}
           </p>
         </div>
@@ -824,10 +824,10 @@ function LighthousePanel({ data }: { data: AuditData }) {
   ];
 
   return (
-    <aside className="rounded-lg border border-white/60 bg-white/38 p-3.5 backdrop-blur-2xl min-[380px]:p-4 sm:p-6 lg:sticky lg:bottom-8">
+    <aside className="min-w-0 rounded-lg border border-white/60 bg-white/38 p-3.5 backdrop-blur-2xl min-[380px]:p-4 sm:p-6 lg:sticky lg:bottom-8">
       <h2 className="text-xl font-light text-[#0A0A0F]">Lighthouse</h2>
       <p className="mt-6 text-xs font-light uppercase tracking-[0.2em] text-[#616674]">Lighthouse Scores</p>
-      <div className="mt-5 grid grid-cols-2 gap-3 min-[380px]:gap-4 sm:gap-6">
+      <div className="mt-5 grid min-w-0 grid-cols-2 gap-3 min-[380px]:gap-4 sm:gap-6">
         {scores.map((score) => (
           <ScoreRing key={score.label} score={score.value} size={80} strokeWidth={7} label={score.label} />
         ))}
@@ -853,13 +853,13 @@ function VitalRow({ vital }: { vital: ReturnType<typeof webVitalChecks>[number] 
   const label = vital.status === "pass" ? "Good" : vital.status === "warning" ? "Needs work" : "Poor";
 
   return (
-    <div className="flex items-center justify-between gap-2.5 rounded-lg border border-white/55 border-l-[3px] border-l-[#4F46E5] bg-white/34 px-3 py-3 backdrop-blur-xl sm:gap-3 sm:px-4">
-      <div>
+    <div className="flex min-w-0 items-center justify-between gap-2.5 rounded-lg border border-white/55 border-l-[3px] border-l-[#4F46E5] bg-white/34 px-3 py-3 backdrop-blur-xl sm:gap-3 sm:px-4">
+      <div className="min-w-0">
         <p className="font-normal text-[#0A0A0F]">{vital.id}</p>
-        <p className="text-[11px] font-light text-[#616674] sm:text-xs">{vital.fullName}</p>
+        <p className="truncate text-[11px] font-light text-[#616674] sm:text-xs">{vital.fullName}</p>
       </div>
-      <div className="text-right">
-        <p className="text-sm font-normal text-[#0A0A0F] sm:text-base">{vital.value}</p>
+      <div className="shrink-0 text-right">
+        <p className="max-w-24 truncate text-sm font-normal text-[#0A0A0F] sm:text-base">{vital.value}</p>
         <span className={`mt-1 inline-flex rounded-md px-2 py-0.5 text-xs font-light ${badge}`}>{label}</span>
       </div>
     </div>

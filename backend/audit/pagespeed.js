@@ -46,11 +46,21 @@ async function getPageSpeedData(url) {
   }
 
   const apiKey = process.env.PAGESPEED_API_KEY;
-  if (!apiKey) {
-    throw new Error('Missing PAGESPEED_API_KEY.');
+  const params = new URLSearchParams({
+    url,
+    strategy: 'mobile',
+    category: 'performance',
+  });
+
+  params.append('category', 'accessibility');
+  params.append('category', 'best-practices');
+  params.append('category', 'seo');
+
+  if (apiKey) {
+    params.set('key', apiKey);
   }
 
-  const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&strategy=mobile&category=performance&category=accessibility&category=best-practices&category=seo&key=${encodeURIComponent(apiKey)}`;
+  const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${params.toString()}`;
   const response = await axios.get(apiUrl, { timeout: pageSpeedTimeoutMs });
 
   pageSpeedCache.set(cacheKey, response.data);
@@ -58,9 +68,10 @@ async function getPageSpeedData(url) {
 }
 
 function unavailablePageSpeedResult(error) {
-  const reason = error?.message || 'PageSpeed data was unavailable.';
+  const reason = error?.response?.data?.error?.message || error?.message || 'PageSpeed data was unavailable.';
   const unavailableChecks = [
     ['lcp', 'Largest Contentful Paint', 'Aim for LCP under 2.5 seconds'],
+    ['fcp', 'First Contentful Paint', 'Aim for FCP under 1.8 seconds'],
     ['inp', 'Interaction to Next Paint', 'Aim for INP under 200 ms'],
     ['cls', 'Cumulative Layout Shift', 'Aim for CLS under 0.1'],
     ['ttfb', 'Time to First Byte', 'Aim for TTFB under 0.8 seconds'],
@@ -106,6 +117,7 @@ async function runPageSpeedChecks(url) {
   const metrics = loadingExperience.metrics || {};
 
   const lcpValue = metrics.LARGEST_CONTENTFUL_PAINT_MS?.percentile ?? audits['largest-contentful-paint']?.numericValue ?? 0;
+  const fcpValue = metrics.FIRST_CONTENTFUL_PAINT_MS?.percentile ?? audits['first-contentful-paint']?.numericValue ?? 0;
   const inpValue = metrics.INTERACTION_TO_NEXT_PAINT?.percentile ?? audits.interactive?.numericValue ?? 0;
   const clsValue = metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE?.percentile
     ? metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE.percentile / 100
@@ -117,6 +129,7 @@ async function runPageSpeedChecks(url) {
   const seoScore = getCategoryScore(categories, 'seo');
 
   const lcpStatus = metricStatus(lcpValue, 2500, 4000);
+  const fcpStatus = metricStatus(fcpValue, 1800, 3000);
   const inpStatus = metricStatus(inpValue, 200, 500);
   const clsStatus = metricStatus(clsValue, 0.1, 0.25);
   const ttfbStatus = metricStatus(ttfbValue, 800, 1800);
@@ -140,6 +153,16 @@ async function runPageSpeedChecks(url) {
         humanMessage: 'LCP measures when the main content becomes visible.',
         fix: ['Optimize hero assets', 'Improve server speed', 'Reduce render blocking'],
         suggestion: 'Aim for LCP under 2.5 seconds',
+      }),
+      buildCheck({
+        id: 'fcp',
+        label: 'First Contentful Paint',
+        status: fcpStatus,
+        value: msToSecondsLabel(fcpValue),
+        rating: toRating(fcpStatus),
+        humanMessage: 'FCP measures when the first text or image is painted.',
+        fix: ['Reduce render blocking resources', 'Inline critical CSS', 'Improve server response time'],
+        suggestion: 'Aim for FCP under 1.8 seconds',
       }),
       buildCheck({
         id: 'inp',
