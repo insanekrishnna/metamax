@@ -69,10 +69,16 @@ function HeroSection() {
             <span className="min-w-0 truncate">30+ performance audits</span>
           </p>
 
-          <h1 className="mt-8 max-w-[600px] text-[34px] font-light leading-[1.05] text-[#080A16] min-[360px]:mt-9 min-[380px]:text-[42px] sm:mt-10 sm:text-[56px]">
+          <h1
+            className="mt-8 inline-block max-w-[600px] text-[34px] font-[370] leading-[1.05] text-[#080A16] min-[360px]:mt-9 min-[380px]:text-[42px] sm:mt-10 sm:text-[56px]"
+            style={{ transform: "scaleX(0.96)", transformOrigin: "left center" }}
+          >
             Websites have hidden bottlenecks
           </h1>
-          <h3 className="mt-6 max-w-[560px] text-[21px] font-light leading-tight text-[#4F46E5] min-[360px]:mt-7 min-[360px]:text-[24px] sm:mt-8 sm:text-[28px]">
+          <h3
+            className="mt-6 inline-block max-w-[560px] text-[21px] font-[360] leading-tight text-[#4F46E5] min-[360px]:mt-7 min-[360px]:text-[24px] sm:mt-8 sm:text-[28px]"
+            style={{ transform: "scaleX(0.96)", transformOrigin: "left center" }}
+          >
             Know exactly what to fix
           </h3>
           <p className="mt-4 max-w-[520px] text-[13px] font-light leading-[1.7] text-[#4B5563] min-[360px]:mt-5 min-[360px]:text-sm sm:mt-6 sm:text-[15px]">
